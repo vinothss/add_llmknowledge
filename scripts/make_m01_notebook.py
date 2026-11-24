@@ -24,9 +24,12 @@ It is messy on purpose. By the end of this lab you will have produced:
 | Output | Used in |
 |---|---|
 | `curated_corpus.jsonl` - clean, deduplicated, PII-free text | Module 3 - Continued Pretraining |
-| `sft_qa.jsonl` - grounded synthetic question/answer pairs | Module 2 - Evaluation, Module 3 - SFT |
+| `sft_qa.jsonl` - grounded synthetic question/answer pairs | Module 3 - Supervised fine-tuning |
 
-**Pipeline:** `raw -> clean -> quality filter -> dedup -> PII redaction -> synthetic QA -> QA filter`
+**Follow along with the Module 1 page in the portal: the step numbers match.**
+
+**Part A, curate the documents:** Step 1 look at the data -> 2 clean -> 3 filter junk -> 4 remove duplicates -> 5 redact personal data  
+**Part B, make training examples:** Step 6 generate Q&A pairs -> 7 keep only faithful pairs
 
 | | Free track (T4) | Pro bonus (L4 / A100) |
 |---|---|---|
@@ -38,7 +41,7 @@ It is messy on purpose. By the end of this lab you will have produced:
 > **check cell** - run it until every line says PASS. Stuck? Set `USE_SOLUTIONS = True`."""),
 ]
 
-cells += [md("## 0. Setup"), code(f"""import os, sys
+cells += [md("## Setup"), code(f"""import os, sys
 REPO_URL = "https://github.com/{REPO_SLUG}"
 USE_DRIVE = False        # True = keep outputs in Google Drive between sessions
 USE_SOLUTIONS = os.environ.get("LAB_USE_SOLUTIONS") == "1"   # set True to load reference answers
@@ -64,7 +67,9 @@ rt = labkit.env.setup(use_drive=USE_DRIVE)
 OUT = rt.workdir / "m01"; OUT.mkdir(parents=True, exist_ok=True)
 SMOKE = os.environ.get("LAB_SMOKE") == "1"   # used by the course's automated tests""")]
 
-cells += [md("""## 1. Meet the raw data
+cells += [md("""# Part A: Curate the documents
+
+## Step 1 - Look at the raw data
 
 Always *look* at data before writing a single filter. Scroll the table: spot the HTML, the
 duplicates, the junk pages, the foreign-language pages and the customer details."""),
@@ -77,7 +82,7 @@ raw[["id", "source", "title", "words", "text"]].head(15)"""),
 training data? (Duplicates -> memorisation and wasted compute. PII -> privacy/legal risk.
 Boilerplate -> the model learns to say "Subscribe to our newsletter!".)""")]
 
-cells += [md("""## 2. Exercise 1 - Text cleaning
+cells += [md("""## Step 2 - Clean the text (Exercise 1)
 
 Write `clean_text(text)` that:
 1. removes `<script>` / `<style>` blocks **with** their contents
@@ -120,7 +125,7 @@ if USE_SOLUTIONS:
 sample = raw[raw["source"].str.startswith("web/")].iloc[0]
 print("BEFORE:\\n", sample["text"][:400], "\\n\\nAFTER:\\n", sample["text_clean"][:400])""")]
 
-cells += [md("""## 3. Exercise 2 - Heuristic quality filters
+cells += [md("""## Step 3 - Filter out junk (Exercise 2)
 
 Production pipelines (NeMo Curator, FineWeb, Dolma) apply dozens of cheap heuristics before any
 expensive model-based filter. Implement three:
@@ -157,7 +162,7 @@ metrics.sort_values("words")[["id", "title", "words", "uniq", "english"]].head(1
 print(f"kept {len(filtered)}/{len(docs)}")
 checks.check_quality_filter(filtered, rt.repo_dir)""")]
 
-cells += [md("""## 4. Exercise 3 - Exact and fuzzy deduplication
+cells += [md("""## Step 4 - Remove duplicates (Exercise 3)
 
 * **Exact dedup** - hash each document (e.g. MD5 of the lower-cased text) and drop repeats.
 * **Fuzzy dedup** - near-duplicates (a footer added, an HTML copy) have different hashes.
@@ -196,7 +201,7 @@ checks.check_dedup(deduped, rt.repo_dir)"""),
     md("""**Experiment:** re-run `fuzzy_dedup` with `threshold=0.3` and `0.95`. What goes wrong at
 each extreme? This precision/recall trade-off is the main tuning decision in real dedup jobs.""")]
 
-cells += [md("""## 5. Exercise 4 - PII redaction
+cells += [md("""## Step 5 - Redact personal data (Exercise 4)
 
 Support tickets contain names, emails and phone numbers. Training on them could make the model
 leak customer data. We use **Microsoft Presidio** (NER + pattern recognisers). NeMo Curator's
@@ -237,7 +242,9 @@ curated[curated["source"] == "crm/tickets"][["id", "text"]]"""),
 print(f"Saved {len(curated)} curated docs -> {OUT/'curated_corpus.jsonl'}")
 print(f"Funnel: raw {len(raw)} -> filtered {len(filtered)} -> deduped {len(deduped)} -> curated {len(curated)}")""")]
 
-cells += [md("""## 6. Exercise 5 - Synthetic QA generation
+cells += [md("""# Part B: Turn the documents into training examples
+
+## Step 6 - Generate question-answer pairs (Exercise 5, part 1)
 
 For Supervised Fine-Tuning we need *instruction* data: questions and answers about Lumora.
 Nobody wrote those, so we generate them with an LLM from the curated documents - the same idea
@@ -264,7 +271,9 @@ for (_, doc), out in zip(knowledge.iterrows(), raw_generations):
 cand_df = pd.DataFrame(candidates)
 print(f"{len(cand_df)} candidate pairs from {len(knowledge)} docs")
 cand_df[["question", "answer"]].head(10)"""),
-    md("""### Write the grounding filter
+    md("""## Step 7 - Keep only faithful pairs (Exercise 5, part 2)
+
+### Write the grounding filter
 
 A simple, surprisingly strong heuristic: the share of the answer's *content words* (no stopwords)
 that also appear in the source document. Keep a pair if that share is >= 0.6.
@@ -290,7 +299,7 @@ print("\\nRejected examples:")
 print(cand_df[~cand_df.grounded][["question", "answer"]].head(5).to_string())"""),
     code("""checks.check_qa(qa.to_dict("records"), min_pairs=5 if SMOKE else 20)""")]
 
-cells += [md("""## 7. Pro bonus - LLM-as-a-judge filtering
+cells += [md("""### Pro bonus - LLM-as-a-judge filtering
 
 *Runs only on Colab Pro (L4 / A100).* Word overlap can't tell whether an answer is actually
 *correct*. A stronger model can: we ask the 7B generator to grade each pair 1-5 for faithfulness
@@ -315,7 +324,7 @@ if rt.is_pro:
 else:
     print("Skipped - switch to an L4 or A100 runtime (Colab Pro) to try this.")""")]
 
-cells += [md("## 8. Save outputs and wrap up"),
+cells += [md("## Save your outputs and wrap up"),
     code("""qa_out = qa[["question", "answer", "context_id"]]
 qa_out.to_json(OUT / "sft_qa.jsonl", orient="records", lines=True, force_ascii=False)
 print(f"Saved {len(qa_out)} QA pairs -> {OUT/'sft_qa.jsonl'}")
