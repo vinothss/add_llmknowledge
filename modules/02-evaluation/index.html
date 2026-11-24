@@ -1,0 +1,2334 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Self-paced, hands-on workshop - curate data, evaluate, customise (CPT / SFT / DPO) and optimise LLMs on Google Colab.">
+      
+      
+      
+        <link rel="canonical" href="https://vinothss.github.io/add_llmknowledge/modules/02-evaluation/">
+      
+      
+        <link rel="prev" href="../01-data-curation/">
+      
+      
+        <link rel="next" href="../03-customization/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
+    
+    
+      
+        <title>2. Evaluating LLMs - Adding Knowledge to LLMs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#module-2-evaluating-llms" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Adding Knowledge to LLMs" class="md-header__button md-logo" aria-label="Adding Knowledge to LLMs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.33 12.91c.09 1.55-.62 3.04-1.89 3.95l.77 1.49c.23.45.26.98.06 1.45-.19.47-.58.84-1.06 1l-.79.25a1.687 1.687 0 0 1-1.86-.55L14.44 18c-.89-.15-1.73-.53-2.44-1.1-.5.15-1 .23-1.5.23-.88 0-1.76-.27-2.5-.79-.53.16-1.07.23-1.62.22-.79.01-1.57-.15-2.3-.45a4.1 4.1 0 0 1-2.43-3.61c-.08-.72.04-1.45.35-2.11-.29-.75-.32-1.57-.07-2.33C2.3 7.11 3 6.32 3.87 5.82c.58-1.69 2.21-2.82 4-2.7 1.6-1.5 4.05-1.66 5.83-.37.42-.11.86-.17 1.3-.17 1.36-.03 2.65.57 3.5 1.64 2.04.53 3.5 2.35 3.58 4.47.05 1.11-.25 2.2-.86 3.13.07.36.11.72.11 1.09m-5-1.41c.57.07 1.02.5 1.02 1.07a1 1 0 0 1-1 1h-.63c-.32.9-.88 1.69-1.62 2.29.25.09.51.14.77.21 5.13-.07 4.53-3.2 4.53-3.25a2.59 2.59 0 0 0-2.69-2.49 1 1 0 0 1-1-1 1 1 0 0 1 1-1c1.23.03 2.41.49 3.33 1.3.05-.29.08-.59.08-.89-.06-1.24-.62-2.32-2.87-2.53-1.25-2.96-4.4-1.32-4.4-.4-.03.23.21.72.25.75a1 1 0 0 1 1 1c0 .55-.45 1-1 1-.53-.02-1.03-.22-1.43-.56-.48.31-1.03.5-1.6.56-.57.05-1.04-.35-1.07-.9a.97.97 0 0 1 .88-1.1c.16-.02.94-.14.94-.77 0-.66.25-1.29.68-1.79-.92-.25-1.91.08-2.91 1.29C6.75 5 6 5.25 5.45 7.2 4.5 7.67 4 8 3.78 9c1.08-.22 2.19-.13 3.22.25.5.19.78.75.59 1.29-.19.52-.77.78-1.29.59-.73-.32-1.55-.34-2.3-.06-.32.27-.32.83-.32 1.27 0 .74.37 1.43 1 1.83.53.27 1.12.41 1.71.4q-.225-.39-.39-.81a1.038 1.038 0 0 1 1.96-.68c.4 1.14 1.42 1.92 2.62 2.05 1.37-.07 2.59-.88 3.19-2.13.23-1.38 1.34-1.5 2.56-1.5m2 7.47-.62-1.3-.71.16 1 1.25zm-4.65-8.61a1 1 0 0 0-.91-1.03c-.71-.04-1.4.2-1.93.67-.57.58-.87 1.38-.84 2.19a1 1 0 0 0 1 1c.57 0 1-.45 1-1 0-.27.07-.54.23-.76.12-.1.27-.15.43-.15.55.03 1.02-.38 1.02-.92"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Adding Knowledge to LLMs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              2. Evaluating LLMs
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/vinothss/add_llmknowledge" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    vinothss/add_llmknowledge
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Adding Knowledge to LLMs" class="md-nav__button md-logo" aria-label="Adding Knowledge to LLMs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.33 12.91c.09 1.55-.62 3.04-1.89 3.95l.77 1.49c.23.45.26.98.06 1.45-.19.47-.58.84-1.06 1l-.79.25a1.687 1.687 0 0 1-1.86-.55L14.44 18c-.89-.15-1.73-.53-2.44-1.1-.5.15-1 .23-1.5.23-.88 0-1.76-.27-2.5-.79-.53.16-1.07.23-1.62.22-.79.01-1.57-.15-2.3-.45a4.1 4.1 0 0 1-2.43-3.61c-.08-.72.04-1.45.35-2.11-.29-.75-.32-1.57-.07-2.33C2.3 7.11 3 6.32 3.87 5.82c.58-1.69 2.21-2.82 4-2.7 1.6-1.5 4.05-1.66 5.83-.37.42-.11.86-.17 1.3-.17 1.36-.03 2.65.57 3.5 1.64 2.04.53 3.5 2.35 3.58 4.47.05 1.11-.25 2.2-.86 3.13.07.36.11.72.11 1.09m-5-1.41c.57.07 1.02.5 1.02 1.07a1 1 0 0 1-1 1h-.63c-.32.9-.88 1.69-1.62 2.29.25.09.51.14.77.21 5.13-.07 4.53-3.2 4.53-3.25a2.59 2.59 0 0 0-2.69-2.49 1 1 0 0 1-1-1 1 1 0 0 1 1-1c1.23.03 2.41.49 3.33 1.3.05-.29.08-.59.08-.89-.06-1.24-.62-2.32-2.87-2.53-1.25-2.96-4.4-1.32-4.4-.4-.03.23.21.72.25.75a1 1 0 0 1 1 1c0 .55-.45 1-1 1-.53-.02-1.03-.22-1.43-.56-.48.31-1.03.5-1.6.56-.57.05-1.04-.35-1.07-.9a.97.97 0 0 1 .88-1.1c.16-.02.94-.14.94-.77 0-.66.25-1.29.68-1.79-.92-.25-1.91.08-2.91 1.29C6.75 5 6 5.25 5.45 7.2 4.5 7.67 4 8 3.78 9c1.08-.22 2.19-.13 3.22.25.5.19.78.75.59 1.29-.19.52-.77.78-1.29.59-.73-.32-1.55-.34-2.3-.06-.32.27-.32.83-.32 1.27 0 .74.37 1.43 1 1.83.53.27 1.12.41 1.71.4q-.225-.39-.39-.81a1.038 1.038 0 0 1 1.96-.68c.4 1.14 1.42 1.92 2.62 2.05 1.37-.07 2.59-.88 3.19-2.13.23-1.38 1.34-1.5 2.56-1.5m2 7.47-.62-1.3-.71.16 1 1.25zm-4.65-8.61a1 1 0 0 0-.91-1.03c-.71-.04-1.4.2-1.93.67-.57.58-.87 1.38-.84 2.19a1 1 0 0 0 1 1c.57 0 1-.45 1-1 0-.27.07-.54.23-.76.12-.1.27-.15.43-.15.55.03 1.02-.38 1.02-.92"/></svg>
+
+    </a>
+    Adding Knowledge to LLMs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/vinothss/add_llmknowledge" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    vinothss/add_llmknowledge
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Modules
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-data-curation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Data curation & synthetic data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Evaluating LLMs
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Evaluating LLMs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-situation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The situation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The situation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-this-is-harder-than-it-sounds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why this is harder than it sounds
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The plan
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-a-how-capable-are-the-models-in-general" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part A: How capable are the models in general?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part A: How capable are the models in general?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-look-at-the-answers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Look at the answers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-use-a-standard-benchmark-mmlu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Use a standard benchmark (MMLU)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 2: Use a standard benchmark (MMLU)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-mmlu-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What MMLU is
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#zero-shot-vs-few-shot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zero-shot vs few-shot
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-score-by-log-likelihood" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Score by log-likelihood
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-b-how-much-do-they-know-about-lumora" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part B: How much do they know about Lumora?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part B: How much do they know about Lumora?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-4-test-lumora-knowledge-closed-book-and-open-book" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Test Lumora knowledge, closed-book and open-book
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 4: Test Lumora knowledge, closed-book and open-book">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-cheap-metric-first-and-why-it-isnt-enough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A cheap metric first, and why it isn't enough
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-build-a-judge-you-can-trust" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Build a judge you can trust
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 5: Build a judge you can trust">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-idea" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The idea
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-judge-is-a-classifier-so-test-it-like-one" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A judge is a classifier, so test it like one
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-real-example-from-building-this-lab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A real example from building this lab
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#calibrate-with-the-judges-confidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Calibrate with the judge's confidence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-c-compare-and-record" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part C: Compare and record
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part C: Compare and record">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-6-rank-the-systems-head-to-head" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Rank the systems head to head
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 6: Rank the systems head to head">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-compare-in-pairs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why compare in pairs?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-elo-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Elo system
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#practical-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Practical details
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#is-the-difference-real" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Is the difference real?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-7-record-everything-in-mlflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7: Record everything in MLflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#module-result" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Module result
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wrap-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wrap-up
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Wrap-up">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key takeaways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#at-production-scale-nvidia-nemo-evaluator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        At production scale: NVIDIA NeMo Evaluator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-pitfalls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common pitfalls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#knowledge-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Knowledge check
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#glossary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Glossary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further reading
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-customization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. Customising LLMs (CPT, SFT, DPO)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-optimization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. Optimising for deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-assessment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5. Assessment - Safety alignment with DPO
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-situation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The situation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The situation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-this-is-harder-than-it-sounds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why this is harder than it sounds
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The plan
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-a-how-capable-are-the-models-in-general" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part A: How capable are the models in general?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part A: How capable are the models in general?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-look-at-the-answers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Look at the answers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-use-a-standard-benchmark-mmlu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Use a standard benchmark (MMLU)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 2: Use a standard benchmark (MMLU)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-mmlu-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What MMLU is
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#zero-shot-vs-few-shot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zero-shot vs few-shot
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-score-by-log-likelihood" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Score by log-likelihood
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-b-how-much-do-they-know-about-lumora" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part B: How much do they know about Lumora?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part B: How much do they know about Lumora?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-4-test-lumora-knowledge-closed-book-and-open-book" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Test Lumora knowledge, closed-book and open-book
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 4: Test Lumora knowledge, closed-book and open-book">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-cheap-metric-first-and-why-it-isnt-enough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A cheap metric first, and why it isn't enough
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-build-a-judge-you-can-trust" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Build a judge you can trust
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 5: Build a judge you can trust">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-idea" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The idea
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-judge-is-a-classifier-so-test-it-like-one" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A judge is a classifier, so test it like one
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-real-example-from-building-this-lab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A real example from building this lab
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#calibrate-with-the-judges-confidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Calibrate with the judge's confidence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-c-compare-and-record" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part C: Compare and record
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part C: Compare and record">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-6-rank-the-systems-head-to-head" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Rank the systems head to head
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 6: Rank the systems head to head">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-compare-in-pairs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why compare in pairs?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-elo-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Elo system
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#practical-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Practical details
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#is-the-difference-real" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Is the difference real?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-7-record-everything-in-mlflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7: Record everything in MLflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#module-result" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Module result
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wrap-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wrap-up
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Wrap-up">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key takeaways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#at-production-scale-nvidia-nemo-evaluator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        At production scale: NVIDIA NeMo Evaluator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-pitfalls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common pitfalls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#knowledge-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Knowledge check
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#glossary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Glossary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further reading
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="module-2-evaluating-llms">Module 2: Evaluating LLMs</h1>
+<p><strong>Time:</strong> about 85 minutes, reading and lab together &nbsp;|&nbsp; <strong>Track:</strong> Free (T4), with a Pro bonus</p>
+<h2 id="the-situation">The situation</h2>
+<p>In Module 1 you built Lumora's training data. Before anyone spends GPU budget training a model on
+it (Module 3), Lumora's leadership asks two questions:</p>
+<ol>
+<li><strong>How good are the candidate models in general?</strong></li>
+<li><strong>How much do they already know about <em>our</em> products?</strong></li>
+</ol>
+<p>They want numbers they can trust, and a record of every experiment so that Module 3's trained
+models can be compared against exactly the same baseline.</p>
+<p>The candidates are two open models of different sizes: on the free track, <strong>Qwen2.5-0.5B</strong> and
+<strong>Qwen2.5-1.5B</strong> (on Pro, 1.5B and 7B). By the end of this module you'll have:</p>
+<ul>
+<li>their general-knowledge scores on a standard benchmark (MMLU)</li>
+<li>their scores on 30 held-out Lumora questions, graded by a judge you've proved you can trust</li>
+<li>a head-to-head ranking of the systems</li>
+<li>every result logged, ready for Module 3 to compare against</li>
+</ul>
+<h3 id="why-this-is-harder-than-it-sounds">Why this is harder than it sounds</h3>
+<p>A spam filter outputs "spam" or "not spam", and you compare against labels. An LLM outputs <strong>free
+text</strong>, and that breaks the simple recipe:</p>
+<table>
+<thead>
+<tr>
+<th>Challenge</th>
+<th>Lumora example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Many correct answers</strong></td>
+<td>"12 years", "twelve years" and "The warranty lasts 12 years" are all right</td>
+</tr>
+<tr>
+<td><strong>Many dimensions</strong></td>
+<td>Correct? Faithful to the source? Helpful? Safe? In Lumora's tone?</td>
+</tr>
+<tr>
+<td><strong>Fluent wrong answers</strong></td>
+<td>"The Vault 10 has 13.5 kWh" reads exactly like a correct answer</td>
+</tr>
+<tr>
+<td><strong>Prompt sensitivity</strong></td>
+<td>Changing the prompt format can move benchmark scores by several points</td>
+</tr>
+<tr>
+<td><strong>Contamination</strong></td>
+<td>Public benchmark questions leak onto the web and into training data</td>
+</tr>
+<tr>
+<td><strong>Goodhart's law</strong></td>
+<td>"When a measure becomes a target, it ceases to be a good measure"</td>
+</tr>
+</tbody>
+</table>
+<p>No single number captures quality. Good evaluation <strong>combines methods</strong>, each answering one
+question, and is honest about each method's error:</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Question it answers</th>
+<th>Cost</th>
+<th>Main weakness</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Eyeballing</strong></td>
+<td>Does it work at all?</td>
+<td>Your time</td>
+<td>Doesn't scale; fluent errors fool you</td>
+</tr>
+<tr>
+<td><strong>Benchmarks</strong> (MMLU...)</td>
+<td>How capable is the model in general?</td>
+<td>Low</td>
+<td>Not <em>your</em> domain; contamination</td>
+</tr>
+<tr>
+<td><strong>Reference metrics</strong> (exact match, F1)</td>
+<td>Does the answer match a known answer?</td>
+<td>Very low</td>
+<td>Punish paraphrase, reward word overlap</td>
+</tr>
+<tr>
+<td><strong>LLM-as-a-judge</strong></td>
+<td>Is this free-text answer correct?</td>
+<td>Medium</td>
+<td>Leniency, position and length biases</td>
+</tr>
+<tr>
+<td><strong>Pairwise + Elo</strong></td>
+<td>Which system is better overall?</td>
+<td>Medium</td>
+<td>Order effects; needs many comparisons</td>
+</tr>
+<tr>
+<td><strong>Human evaluation</strong></td>
+<td>Ground truth for all of the above</td>
+<td>High</td>
+<td>Slow, expensive; raters disagree too</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-plan">The plan</h3>
+<p>This module climbs that ladder, in three parts:</p>
+<pre class="mermaid"><code>flowchart TB
+  subgraph A["Part A: general ability"]
+    direction LR
+    S1[1. Look at&lt;br/&gt;the answers] --&gt; S2[2. Build MMLU&lt;br/&gt;prompts] --&gt; S3[3. Score by&lt;br/&gt;log-likelihood]
+  end
+  subgraph B["Part B: Lumora knowledge"]
+    direction LR
+    S4[4. Closed-book vs&lt;br/&gt;open-book test] --&gt; S5[5. Build a judge&lt;br/&gt;you can trust]
+  end
+  subgraph C["Part C: compare and record"]
+    direction LR
+    S6[6. Rank the systems&lt;br/&gt;head to head] --&gt; S7[7. Record everything&lt;br/&gt;in MLflow]
+  end
+  A --&gt; B --&gt; C</code></pre>
+<div class="lab-card">
+<p><strong>Open the lab now and work through it alongside this page</strong></p>
+<p><a href="https://colab.research.google.com/github/vinothss/add_llmknowledge/blob/main/notebooks/02_evaluation.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
+<p>The notebook uses the same step numbers as this page. Each step ends with a <strong>▶ Lab</strong> box.</p>
+<table>
+<thead>
+<tr>
+<th>Exercise</th>
+<th>Step</th>
+<th>The check confirms</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Build MMLU prompts</td>
+<td>2</td>
+<td>0-shot and 5-shot structure, no leaked answers</td>
+</tr>
+<tr>
+<td>2. Log-likelihood scoring</td>
+<td>3</td>
+<td>matches reference scoring on at least 95% of prompts</td>
+</tr>
+<tr>
+<td>3. Calibrate the judge</td>
+<td>5</td>
+<td>held-out agreement at least 80%, at most 10% of hallucinations accepted</td>
+</tr>
+<tr>
+<td>4. Elo</td>
+<td>6</td>
+<td>5 unit tests (expected score, update, zero-sum)</td>
+</tr>
+<tr>
+<td>5. MLflow tracking</td>
+<td>7</td>
+<td>all MMLU and Lumora runs logged with parameters and metrics</td>
+</tr>
+<tr>
+<td>Pro bonus</td>
+<td>7</td>
+<td>cross-check with <code>lm-evaluation-harness</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr />
+<h2 id="part-a-how-capable-are-the-models-in-general">Part A: How capable are the models in general?</h2>
+<h3 id="step-1-look-at-the-answers">Step 1: Look at the answers</h3>
+<p>Start by <em>reading</em> what the model says. Ask the small model a few Lumora questions with no
+documents in the prompt (<strong>closed-book</strong>) and read its answers.</p>
+<p>It answers fluently and confidently, and it has never seen a word about Lumora. That's
+<strong>hallucination</strong>, and it's why reading answers isn't enough: a confident wrong answer looks just
+like a right one, and nobody can read 10,000 of them. You need measurements.</p>
+<div class="admonition example">
+<p class="admonition-title">▶ Lab: Step 1</p>
+<p>Run the setup cells and the eyeballing cell. How many of the answers would you have believed?</p>
+</div>
+<p>The first measurement is the broadest: how capable is each model in general?</p>
+<hr />
+<h3 id="step-2-use-a-standard-benchmark-mmlu">Step 2: Use a standard benchmark (MMLU)</h3>
+<h4 id="what-mmlu-is">What MMLU is</h4>
+<p><strong>MMLU</strong> (Massive Multitask Language Understanding, Hendrycks et al., 2021) has about 14,000
+four-option multiple-choice questions across <strong>57 subjects</strong>, from elementary maths and astronomy
+to law and medicine. Random guessing scores 25%. For years it was the headline number for general
+knowledge and reasoning. Know its limits when you read model cards:</p>
+<ul>
+<li><strong>Saturation:</strong> frontier models score near the top, so differences stop meaning much. Harder
+  successors such as MMLU-Pro exist for this reason.</li>
+<li><strong>Label errors:</strong> a small percentage of questions have wrong or ambiguous answers.</li>
+<li><strong>Contamination:</strong> the questions have been public since 2020 and appear in web crawls.</li>
+<li><strong>Not your domain:</strong> a high MMLU score says nothing about Lumora's warranty.</li>
+</ul>
+<p>So in this workshop, MMLU has one specific job: <strong>detecting damage</strong>. If training on Lumora data
+in Module 3 hurts the model's general ability, MMLU drops.</p>
+<h4 id="zero-shot-vs-few-shot">Zero-shot vs few-shot</h4>
+<p><strong>Zero-shot</strong> gives the model the question alone. <strong>Few-shot</strong> shows <em>k</em> solved examples first,
+typically 5. Brown et al. (2020, the GPT-3 paper) showed that models improve markedly from a few
+examples in the prompt <strong>without any training</strong>. This is <em>in-context learning</em>. The examples show
+the format ("answer with a single letter") and prime the task. Small models usually gain the most.</p>
+<div class="admonition example">
+<p class="admonition-title">▶ Lab: Exercise 1, build MMLU prompts</p>
+<p>Write <code>build_prompt</code> for zero-shot and 5-shot. The check confirms the structure and that no
+answer leaks into the prompt.</p>
+</div>
+<p>Now you have prompts. The next question is how to read the model's answer reliably.</p>
+<hr />
+<h3 id="step-3-score-by-log-likelihood">Step 3: Score by log-likelihood</h3>
+<p>You could let the model write an answer and pick out "The answer is B" with a pattern, but models
+write "B)", "(B)", "Option B", or explain first and answer last. Parsing is fragile, and random
+sampling adds noise.</p>
+<p>Evaluation harnesses instead end the prompt with <code>Answer:</code> and look at the probability the model
+gives to each possible <strong>next token</strong>:</p>
+<div class="highlight"><pre><span></span><code>...
+C. It would be harder since the truck is lighter on Mars.
+D. It would be the same no matter where you are.
+Answer:      -&gt;  P(" A") = 0.08   P(" B") = 0.71   P(" C") = 0.05   P(" D") = 0.16   -&gt; predict B
+</code></pre></div>
+<p>One forward pass per question, no parsing, and the same answer every run.</p>
+<details class="info">
+<summary>Why the leading space in ' A'?</summary>
+<p>Tokenizers usually treat a word and the same word with a space in front as <strong>different
+tokens</strong>. After "Answer:" the natural continuation is " B", with a space. The probability of
+"B" without the space measures something the model rarely writes. Details like this are why
+different harnesses report slightly different numbers for the same model.</p>
+</details>
+<div class="admonition example">
+<p class="admonition-title">▶ Lab: Exercise 2, write <code>predict_letters</code></p>
+<p>Score each prompt by comparing the next-token probabilities of <code>" A"</code> to <code>" D"</code>. Then run MMLU
+zero-shot and 5-shot for both models and compare.</p>
+</div>
+<p>General ability is measured. But MMLU can't tell you the thing Lumora cares about most.</p>
+<hr />
+<h2 id="part-b-how-much-do-they-know-about-lumora">Part B: How much do they know about Lumora?</h2>
+<h3 id="step-4-test-lumora-knowledge-closed-book-and-open-book">Step 4: Test Lumora knowledge, closed-book and open-book</h3>
+<p>Public benchmarks can't tell you whether a model knows <em>your</em> domain. For that you need your own
+test set. The lab ships one: <strong>30 human-written Lumora questions</strong> with reference answers, covering
+products, warranty, error codes, policies and engineering notes.</p>
+<div class="admonition warning">
+<p class="admonition-title">Rules for a trustworthy domain test</p>
+<ol>
+<li><strong>Held out:</strong> never used for training, prompt examples or tuning.</li>
+<li><strong>Written independently</strong> of the training data, ideally by different people.</li>
+<li><strong>Covers the categories you care about</strong>, with enough questions in each.</li>
+<li><strong>Clear reference answers.</strong> Avoid yes/no questions: a model guesses those right 50% of the time.</li>
+<li><strong>Versioned</strong>, so scores from different months are comparable.</li>
+</ol>
+</div>
+<p>The lab runs three setups:</p>
+<table>
+<thead>
+<tr>
+<th>Setup</th>
+<th>Prompt contains</th>
+<th>Measures</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Small model, closed-book</td>
+<td>The question</td>
+<td>What the model <em>knows</em></td>
+</tr>
+<tr>
+<td>Large model, closed-book</td>
+<td>The question</td>
+<td>Whether a bigger model knows more</td>
+</tr>
+<tr>
+<td>Large model, <strong>open-book</strong></td>
+<td>The question <strong>plus the source document</strong></td>
+<td>Whether the model can <em>use</em> the knowledge when it has it</td>
+</tr>
+</tbody>
+</table>
+<p>Expect both closed-book setups to score low and open-book to score near 100%. Two lessons:
+<strong>a bigger model doesn't know facts it never saw</strong>, and <strong>the gap between closed-book and open-book
+is the size of Lumora's knowledge problem.</strong> Retrieval (RAG) closes it by putting documents in the
+prompt at question time; Module 3 closes it by training the knowledge in.</p>
+<h4 id="a-cheap-metric-first-and-why-it-isnt-enough">A cheap metric first, and why it isn't enough</h4>
+<p>The cheapest way to grade an answer is to compare it with the reference:</p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>How</th>
+<th>Fails on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Exact match</strong></td>
+<td>The answer equals the reference (after normalising)</td>
+<td>Any paraphrase: "twelve years" vs "12 years."</td>
+</tr>
+<tr>
+<td><strong>Token F1</strong></td>
+<td>Word overlap (<a href="https://en.wikipedia.org/wiki/F-score">F-score</a>): the balance of precision and recall</td>
+<td>Wrong answers that reuse the question's words</td>
+</tr>
+<tr>
+<td><strong>ROUGE / BLEU</strong></td>
+<td>Overlap of word sequences</td>
+<td>The same, plus length effects</td>
+</tr>
+<tr>
+<td><strong>Embedding similarity</strong></td>
+<td>Cosine similarity of sentence embeddings</td>
+<td>"12 years" and "15 years" look almost identical</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition example">
+<p class="admonition-title">Token F1 rewarding the wrong answer</p>
+<p>Reference: <em>"12 years."</em></p>
+<ul>
+<li>Answer A: <em>"The Lumora Vault warranty lasts for 12 years."</em> F1 = 0.40 (correct, but wordy)</li>
+<li>Answer B: <em>"The Lumora Vault warranty typically lasts 5 years."</em> F1 = 0.20 (<strong>wrong</strong>, still gets credit)</li>
+<li>Answer C: <em>"Twelve years."</em> F1 = 0.50 (correct, but "twelve" doesn't match "12")</li>
+</ul>
+<p>The correct answers score only 0.4-0.5, and the wrong one gets half as much credit. Reference
+metrics are fine for short, standard answers such as numbers and names; free-text answers need
+a grader that understands meaning.</p>
+</div>
+<div class="admonition example">
+<p class="admonition-title">▶ Lab: Step 4</p>
+<p>Generate closed-book and open-book answers, compute token F1, and read the answers next to
+their scores. Does F1 reward the right things?</p>
+</div>
+<p>So you need a grader that understands meaning: another LLM. But a grader you haven't tested is
+just another source of error.</p>
+<hr />
+<h3 id="step-5-build-a-judge-you-can-trust">Step 5: Build a judge you can trust</h3>
+<h4 id="the-idea">The idea</h4>
+<p>Use an LLM to grade answers: give it the question, the reference answer and the candidate, and
+ask "Is the candidate correct?". Zheng et al. (2023) found that a strong judge such as GPT-4 agreed
+with human preferences about 80% of the time, roughly as often as two humans agree. That made LLM
+judging the standard way to grade open-ended output at scale.</p>
+<table>
+<thead>
+<tr>
+<th>Setup</th>
+<th>Judge sees</th>
+<th>Use when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Reference-guided grading</strong></td>
+<td>Question + reference + candidate</td>
+<td>You have a correct answer (the Lumora test)</td>
+</tr>
+<tr>
+<td><strong>Single-answer scoring</strong></td>
+<td>Question + candidate, with a rubric</td>
+<td>No reference, e.g. helpfulness</td>
+</tr>
+<tr>
+<td><strong>Pairwise comparison</strong></td>
+<td>Question + two candidates</td>
+<td>Ranking systems (Step 6)</td>
+</tr>
+</tbody>
+</table>
+<p>Judges have well-known biases:</p>
+<table>
+<thead>
+<tr>
+<th>Bias</th>
+<th>What happens</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Leniency</strong></td>
+<td>Says "correct" to fluent nonsense, especially small judges</td>
+<td>Calibrate on human labels (below)</td>
+</tr>
+<tr>
+<td><strong>Position bias</strong></td>
+<td>Prefers whichever answer is shown first, or second</td>
+<td>Judge both orders and average</td>
+</tr>
+<tr>
+<td><strong>Length bias</strong></td>
+<td>Prefers longer answers</td>
+<td>Rubrics that reward concision</td>
+</tr>
+<tr>
+<td><strong>Self-preference</strong></td>
+<td>Rates its own model family higher</td>
+<td>Use a different, stronger judge</td>
+</tr>
+</tbody>
+</table>
+<h4 id="a-judge-is-a-classifier-so-test-it-like-one">A judge is a classifier, so test it like one</h4>
+<p>When the judge says "correct" or "incorrect", it's a classifier, and human labels are the ground
+truth:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Human: correct</th>
+<th>Human: incorrect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Judge: correct</strong></td>
+<td>True positive</td>
+<td><strong>False positive: hallucination accepted</strong></td>
+</tr>
+<tr>
+<td><strong>Judge: incorrect</strong></td>
+<td>False negative: correct answer rejected</td>
+<td>True negative</td>
+</tr>
+</tbody>
+</table>
+<p>Two numbers matter most: <strong>agreement</strong> (how often the judge matches the human) and the
+<strong>false-positive rate</strong> (the share of wrong answers the judge accepts). The second is the dangerous
+one, because it <strong>inflates your model's score</strong> and hides the hallucinations you're trying to
+measure.</p>
+<h4 id="a-real-example-from-building-this-lab">A real example from building this lab</h4>
+<ol>
+<li><strong>Hand-written test cases looked fine.</strong> On 30 invented answers, a 1.5B judge agreed with the
+   human labels about 90% of the time.</li>
+<li><strong>Real model answers told a different story.</strong> On actual closed-book answers from the candidate
+   models, the same judge accepted about <strong>half</strong> as correct, when a careful human reading found
+   only about 10% were. Real hallucinations are fluent, specific and plausible ("The warranty
+   typically lasts 5 years"). Invented test cases rarely look like that.</li>
+<li><strong>The lesson: test the judge on the kind of answers it will actually grade.</strong> The lab's
+   calibration set has 155 items, 120 of them real answers from the candidate models, each labelled
+   by a person.</li>
+</ol>
+<h4 id="calibrate-with-the-judges-confidence">Calibrate with the judge's confidence</h4>
+<p>Instead of trusting the judge's Yes or No, read how <em>confident</em> it is from the probability of its
+first token:</p>
+<div class="arithmatex">\[\text{score} = \log P(\text{&quot;Yes&quot;}) - \log P(\text{&quot;No&quot;})\]</div>
+<p>A positive score means it leans Yes. Then <strong>choose the threshold from the human labels</strong>: try every
+candidate threshold on the calibration questions and keep the one with the best agreement. On
+ties, choose the stricter threshold, because accepting hallucinations is the costlier mistake.</p>
+<p><strong>Never tune and report on the same data.</strong> The lab tunes on questions q01-q15 and reports on
+q16-q30, so no question's answers appear on both sides:</p>
+<table>
+<thead>
+<tr>
+<th>Judge</th>
+<th>Agreement (tuning set)</th>
+<th><strong>Agreement (test set)</strong></th>
+<th><strong>Hallucinations accepted (test set)</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Naive (threshold 0: trust its Yes/No)</td>
+<td>88%</td>
+<td>86%</td>
+<td><strong>21%</strong></td>
+</tr>
+<tr>
+<td>Calibrated (threshold about 4.0)</td>
+<td>95%</td>
+<td><strong>84%</strong></td>
+<td><strong>3%</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Agreement barely changes, but <strong>accepted hallucinations drop from about 1 in 5 to about 1 in 30</strong>,
+and that's what protects your scores. The calibrated judge also does better on the tuning set than
+on the test set: the threshold slightly <strong>overfits</strong> the data it was tuned on, which is why you
+report the test number.</p>
+<details class="info">
+<summary>Beyond accuracy: Cohen's kappa</summary>
+<p>If 90% of answers are wrong, a judge that always says "incorrect" scores 90% agreement while
+learning nothing. <strong><a href="https://en.wikipedia.org/wiki/Cohen%27s_kappa">Cohen's kappa</a></strong> corrects
+for chance agreement: <span class="arithmatex">\(\kappa = \frac{p_o - p_e}{1 - p_e}\)</span>, where <span class="arithmatex">\(p_o\)</span> is the observed
+agreement and <span class="arithmatex">\(p_e\)</span> the agreement expected by chance. Values above about 0.6 are usually read as
+substantial agreement. The lab's calibration set is roughly balanced, so accuracy is meaningful
+there; use kappa when your classes are skewed.</p>
+</details>
+<div class="admonition example">
+<p class="admonition-title">▶ Lab: Exercise 3, calibrate the judge</p>
+<p>Write <code>pick_threshold</code>, compare the naive and calibrated judges on the test questions, then
+grade all three systems with your calibrated judge.</p>
+</div>
+<p>You can now score answers against a reference. But some questions don't have one.</p>
+<hr />
+<h2 id="part-c-compare-and-record">Part C: Compare and record</h2>
+<h3 id="step-6-rank-the-systems-head-to-head">Step 6: Rank the systems head to head</h3>
+<h4 id="why-compare-in-pairs">Why compare in pairs?</h4>
+<p>For style, helpfulness or chat quality there's no single right answer, and absolute scores drift
+("is this a 7 or an 8?"). People and LLM judges are more consistent at <strong>relative</strong> judgements:
+"Is A or B better?". Chatbot Arena ranks models this way from millions of votes.</p>
+<h4 id="the-elo-system">The Elo system</h4>
+<p>Each system has a rating <span class="arithmatex">\(R\)</span> (see <a href="https://en.wikipedia.org/wiki/Elo_rating_system">Elo rating system</a>).
+Before a comparison, the <strong>expected score</strong> of A against B is:</p>
+<div class="arithmatex">\[E_A = \frac{1}{1 + 10^{(R_B - R_A)/400}}\]</div>
+<p>After it, with actual score <span class="arithmatex">\(S_A\)</span> (1 for a win, 0.5 for a tie, 0 for a loss, or any probability in
+between):</p>
+<div class="arithmatex">\[R_A' = R_A + K\,(S_A - E_A), \qquad R_B' = R_B - K\,(S_A - E_A)\]</div>
+<table>
+<thead>
+<tr>
+<th>Rating gap</th>
+<th>Expected win rate of the higher-rated system</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>50%</td>
+</tr>
+<tr>
+<td>100</td>
+<td>64%</td>
+</tr>
+<tr>
+<td>200</td>
+<td>76%</td>
+</tr>
+<tr>
+<td>400</td>
+<td>91%</td>
+</tr>
+</tbody>
+</table>
+<p><span class="arithmatex">\(K\)</span> (the lab uses 32) sets how far one comparison moves the ratings. What A gains, B loses. An
+upset moves ratings a lot; an expected result barely moves them.</p>
+<h4 id="practical-details">Practical details</h4>
+<ul>
+<li><strong>Order:</strong> Elo processes comparisons one at a time, so the order changes the final ratings. The
+  lab averages over 50 random orders. Chatbot Arena switched to the
+  <strong><a href="https://en.wikipedia.org/wiki/Bradley%E2%80%93Terry_model">Bradley-Terry</a></strong> model, which fits
+  all results at once.</li>
+<li><strong>Position bias:</strong> the lab judges every pair twice, with the answers swapped, and averages. The
+  notebook prints the measured bias; small judges often lean clearly towards one position.</li>
+<li><strong>Uncertainty:</strong> ratings from a few dozen comparisons are noisy. Report confidence intervals
+  (bootstrap: resample the comparisons, recompute, repeat) when systems are close.</li>
+</ul>
+<div class="admonition example">
+<p class="admonition-title">▶ Lab: Exercise 4, write <code>elo_expected</code> and <code>elo_update</code></p>
+<p>Pass the unit tests, then run the tournament: every pair of systems on every question, judged
+in both orders.</p>
+</div>
+<h4 id="is-the-difference-real">Is the difference real?</h4>
+<p>Before you announce a winner, check that the gap isn't noise. With 30 questions, each one is worth
+3.3 percentage points. If a model's true accuracy is 50%, the 95%
+<a href="https://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval">confidence interval</a> on a
+30-question test is roughly:</p>
+<div class="arithmatex">\[\pm 1.96\sqrt{\frac{p(1-p)}{n}} = \pm 1.96\sqrt{\frac{0.5 \times 0.5}{30}} \approx \pm 18 \text{ points}\]</div>
+<p>So <strong>"57% vs 50%" on 30 questions is not evidence of a difference.</strong> "10% vs 70%" is.</p>
+<ul>
+<li>Use a few hundred questions before trusting single-digit differences.</li>
+<li>Compare models on the <strong>same</strong> questions and look at which ones changed.</li>
+<li>Generate with temperature 0, as the lab does, or average several runs.</li>
+<li>Count the judge's error rate as part of the noise.</li>
+</ul>
+<p>You now have a lot of numbers. The last step makes sure they're still useful next week.</p>
+<hr />
+<h3 id="step-7-record-everything-in-mlflow">Step 7: Record everything in MLflow</h3>
+<p>Three weeks from now, nobody will remember which prompt, model version or judge threshold
+produced "72%". Module 3 needs to compare its trained models against <em>exactly</em> these baselines.
+MLflow organises results as:</p>
+<table>
+<thead>
+<tr>
+<th>Concept</th>
+<th>Meaning</th>
+<th>Lab example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Experiment</strong></td>
+<td>A group of related runs</td>
+<td><code>lumora-eval</code></td>
+</tr>
+<tr>
+<td><strong>Run</strong></td>
+<td>One evaluation of one configuration</td>
+<td><code>mmlu-Qwen2.5-1.5B-Instruct-5shot</code></td>
+</tr>
+<tr>
+<td><strong>Params</strong></td>
+<td>What you did</td>
+<td>model, benchmark, k_shot, judge</td>
+</tr>
+<tr>
+<td><strong>Metrics</strong></td>
+<td>What happened</td>
+<td>mmlu_acc, lumora_acc, token_f1, elo</td>
+</tr>
+<tr>
+<td><strong>Tags</strong></td>
+<td>Free-form labels</td>
+<td>tier = free / pro</td>
+</tr>
+<tr>
+<td><strong>Artifacts</strong></td>
+<td>Files</td>
+<td>predictions, plots, the judge prompt</td>
+</tr>
+</tbody>
+</table>
+<p>For full reproducibility, also record the model <strong>revision</strong> (its commit on Hugging Face), the
+dataset version, prompt templates, seeds and library versions.</p>
+<div class="admonition example">
+<p class="admonition-title">▶ Lab: Exercise 5, write <code>log_run</code></p>
+<p>Log every MMLU and Lumora result with its parameters and metrics, then query them back.</p>
+</div>
+<div class="admonition example">
+<p class="admonition-title">▶ Lab: Pro bonus, cross-check with <code>lm-evaluation-harness</code> (Colab Pro)</p>
+<p>Your MMLU numbers come from code you wrote. Production teams use standard harnesses so results
+are comparable across papers. Run the harness and compare its number with yours.</p>
+</div>
+<h3 id="module-result">Module result</h3>
+<p>The notebook saves <code>baselines.json</code> and the MLflow database: general-knowledge scores, Lumora
+scores from a judge you've tested, and a ranking. Module 3 trains on Module 1's data and measures
+its models against these numbers.</p>
+<div class="lab-complete" data-id="m02"></div>
+
+<hr />
+<h2 id="wrap-up">Wrap-up</h2>
+<h3 id="key-takeaways">Key takeaways</h3>
+<ul>
+<li><strong>Read answers first, then measure.</strong> Fluent doesn't mean correct.</li>
+<li><strong>Use each method for its own question.</strong> MMLU for general ability (and damage), your own test
+  for domain knowledge, a judge for free text, pairwise comparison for overall quality.</li>
+<li><strong>Test the judge before trusting it,</strong> on real answers, and report its error on held-out data.</li>
+<li><strong>Small test sets are noisy.</strong> Don't declare a winner on a few points.</li>
+<li><strong>Record everything,</strong> or you can't compare later.</li>
+</ul>
+<h3 id="at-production-scale-nvidia-nemo-evaluator">At production scale: NVIDIA NeMo Evaluator</h3>
+<table>
+<thead>
+<tr>
+<th>Lab</th>
+<th>NeMo Evaluator</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MMLU loop / <code>lm-evaluation-harness</code></td>
+<td>Academic benchmark jobs (MMLU, GSM8K...) submitted via API</td>
+</tr>
+<tr>
+<td><code>k_shot</code></td>
+<td><code>num_fewshot</code> in the evaluation config</td>
+</tr>
+<tr>
+<td>Calibrated judge</td>
+<td>LLM-as-a-judge evaluation with custom prompts and metrics</td>
+</tr>
+<tr>
+<td>Lumora test set</td>
+<td>Custom dataset evaluation</td>
+</tr>
+<tr>
+<td>MLflow</td>
+<td>Results store and MLflow integration</td>
+</tr>
+</tbody>
+</table>
+<h3 id="common-pitfalls">Common pitfalls</h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Trusting fluent answers without measuring</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Using MMLU, or any public benchmark, as evidence of <em>domain</em> knowledge</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Yes/no questions in your test set (50% by guessing)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Trusting an LLM judge without testing it against human labels</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Testing the judge on invented examples instead of real model answers</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Tuning and reporting on the same data</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Judging pairs in one order only (position bias)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Declaring a winner from a few points on a small test set</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Not recording prompts, model versions and thresholds</li>
+</ul>
+<h3 id="knowledge-check">Knowledge check</h3>
+<script type="application/json" class="quiz" data-id="m02">
+[
+  {"q": "Why do benchmark harnesses score MMLU with next-token log-probabilities instead of generating an answer?",
+   "options": ["It is more creative", "One forward pass, no answer parsing, and deterministic results", "Generation is not possible for small models", "It makes the model smarter"],
+   "answer": 1, "why": "Comparing P(' A')...P(' D') avoids fragile parsing and sampling noise."},
+  {"q": "A 1.5B and a 0.5B model both score near 0% closed-book on Lumora questions but about 100% open-book. What does this tell you?",
+   "options": ["The benchmark is broken", "Bigger models always know more", "The models lack the knowledge, not the ability to use it once supplied", "The judge is too strict"],
+   "answer": 2, "why": "A bigger model doesn't know facts it never saw. Supplying them, in the prompt or by training, does."},
+  {"q": "Calibration barely changed the judge's agreement (86% to 84%) but cut accepted hallucinations from 21% to 3%. Why does the second number matter more?",
+   "options": ["It doesn't", "Accepted hallucinations inflate a model's score and hide exactly the errors you're trying to measure", "False negatives are impossible", "Agreement is always 50%"],
+   "answer": 1, "why": "A lenient judge makes bad models look good. The false-positive rate is the dangerous error."},
+  {"q": "Your judge agrees with humans 95% on the tuning questions and 84% on the test questions. What is going on?",
+   "options": ["The test labels are wrong", "The threshold slightly overfits the tuning questions, so report the test number", "The judge got worse while running", "Agreement can't be compared across sets"],
+   "answer": 1, "why": "Anything tuned on data looks best on that data. The held-out score is the honest estimate."},
+  {"q": "Why is each pairwise comparison judged twice with the answers swapped?",
+   "options": ["To double the dataset", "LLM judges tend to prefer one position; averaging both orders cancels that bias", "Elo requires an even number of games", "To check the answers are different"],
+   "answer": 1, "why": "Position bias is one of the best-documented LLM-judge biases."},
+  {"q": "Two systems have Elo 1100 and 1000. Roughly how often should the first one win a comparison?",
+   "options": ["50%", "64%", "91%", "100%"],
+   "answer": 1, "why": "E = 1 / (1 + 10^(-100/400)), about 0.64."},
+  {"q": "Model A scores 57% and model B 50% on your 30-question test. What can you conclude?",
+   "options": ["A is clearly better", "Not much: the 95% confidence interval is about ±18 points at this size", "B is better", "The test is contaminated"],
+   "answer": 1, "why": "Small test sets are noisy. You'd need hundreds of questions to trust a 7-point gap."}
+]
+</script>
+
+<h3 id="glossary">Glossary</h3>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Benchmark</strong></td>
+<td>A fixed, public test set for comparing models</td>
+</tr>
+<tr>
+<td><strong>Log-likelihood scoring</strong></td>
+<td>Picking the option the model gives the highest probability</td>
+</tr>
+<tr>
+<td><a href="https://en.wikipedia.org/wiki/Prompt_engineering"><strong>In-context learning</strong></a></td>
+<td>Improving behaviour with examples in the prompt, without training</td>
+</tr>
+<tr>
+<td><strong>Closed-book / open-book</strong></td>
+<td>Answering from memory vs with the source document in the prompt</td>
+</tr>
+<tr>
+<td><strong>Calibration</strong></td>
+<td>Aligning a judge's decisions with human labels, e.g. by choosing a threshold</td>
+</tr>
+<tr>
+<td><a href="https://en.wikipedia.org/wiki/Confusion_matrix"><strong>False-positive rate</strong></a></td>
+<td>The share of truly incorrect answers that the judge accepts</td>
+</tr>
+<tr>
+<td><strong>Position bias</strong></td>
+<td>A judge preferring an answer because of where it appears</td>
+</tr>
+<tr>
+<td><a href="https://en.wikipedia.org/wiki/Elo_rating_system"><strong>Elo</strong></a></td>
+<td>A rating system that updates scores from pairwise results</td>
+</tr>
+<tr>
+<td><a href="https://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval"><strong>Confidence interval</strong></a></td>
+<td>The range likely to contain the true value, given sampling noise</td>
+</tr>
+<tr>
+<td><strong>Contamination</strong></td>
+<td>Test items present in training data</td>
+</tr>
+</tbody>
+</table>
+<h3 id="further-reading">Further reading</h3>
+<p><strong>Papers</strong></p>
+<ul>
+<li>Hendrycks et al. (2021), <a href="https://arxiv.org/abs/2009.03300"><em>Measuring Massive Multitask Language Understanding</em></a></li>
+<li>Brown et al. (2020), <a href="https://arxiv.org/abs/2005.14165"><em>Language Models are Few-Shot Learners</em></a></li>
+<li>Zheng et al. (2023), <a href="https://arxiv.org/abs/2306.05685"><em>Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena</em></a></li>
+<li>Liang et al. (2022), <a href="https://arxiv.org/abs/2211.09110"><em>Holistic Evaluation of Language Models (HELM)</em></a></li>
+<li>Chiang et al. (2024), <a href="https://arxiv.org/abs/2403.04132"><em>Chatbot Arena: An Open Platform for Evaluating LLMs by Human Preference</em></a></li>
+<li>EleutherAI, <a href="https://github.com/EleutherAI/lm-evaluation-harness"><code>lm-evaluation-harness</code></a> (GitHub)</li>
+</ul>
+<p><strong>Concepts and tools</strong></p>
+<ul>
+<li><a href="https://huggingface.co/datasets/cais/mmlu">MMLU dataset card (Hugging Face)</a></li>
+<li><a href="https://en.wikipedia.org/wiki/F-score">F-score / F1 (Wikipedia)</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Confusion_matrix">Confusion matrix (Wikipedia)</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Cohen%27s_kappa">Cohen's kappa (Wikipedia)</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval">Binomial proportion confidence interval (Wikipedia)</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Bootstrapping_(statistics)">Bootstrapping in statistics (Wikipedia)</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Elo_rating_system">Elo rating system (Wikipedia)</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Bradley%E2%80%93Terry_model">Bradley-Terry model (Wikipedia)</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Goodhart%27s_law">Goodhart's law (Wikipedia)</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Prompt_engineering">In-context learning and prompt engineering (Wikipedia)</a></li>
+<li><a href="https://mlflow.org/docs/latest/tracking.html">MLflow Tracking documentation</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../01-data-curation/" class="md-footer__link md-footer__link--prev" aria-label="Previous: 1. Data curation &amp; synthetic data">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                1. Data curation & synthetic data
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../03-customization/" class="md-footer__link md-footer__link--next" aria-label="Next: 3. Customising LLMs (CPT, SFT, DPO)">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                3. Customising LLMs (CPT, SFT, DPO)
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.footer", "navigation.top", "content.code.copy", "search.highlight"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+        <script src="../../javascripts/portal.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

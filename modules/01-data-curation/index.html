@@ -1,0 +1,2338 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Self-paced, hands-on workshop - curate data, evaluate, customise (CPT / SFT / DPO) and optimise LLMs on Google Colab.">
+      
+      
+      
+        <link rel="canonical" href="https://vinothss.github.io/add_llmknowledge/modules/01-data-curation/">
+      
+      
+        <link rel="prev" href="../../getting-started/">
+      
+      
+        <link rel="next" href="../02-evaluation/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
+    
+    
+      
+        <title>1. Data curation & synthetic data - Adding Knowledge to LLMs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#module-1-data-curation-synthetic-data-generation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Adding Knowledge to LLMs" class="md-header__button md-logo" aria-label="Adding Knowledge to LLMs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.33 12.91c.09 1.55-.62 3.04-1.89 3.95l.77 1.49c.23.45.26.98.06 1.45-.19.47-.58.84-1.06 1l-.79.25a1.687 1.687 0 0 1-1.86-.55L14.44 18c-.89-.15-1.73-.53-2.44-1.1-.5.15-1 .23-1.5.23-.88 0-1.76-.27-2.5-.79-.53.16-1.07.23-1.62.22-.79.01-1.57-.15-2.3-.45a4.1 4.1 0 0 1-2.43-3.61c-.08-.72.04-1.45.35-2.11-.29-.75-.32-1.57-.07-2.33C2.3 7.11 3 6.32 3.87 5.82c.58-1.69 2.21-2.82 4-2.7 1.6-1.5 4.05-1.66 5.83-.37.42-.11.86-.17 1.3-.17 1.36-.03 2.65.57 3.5 1.64 2.04.53 3.5 2.35 3.58 4.47.05 1.11-.25 2.2-.86 3.13.07.36.11.72.11 1.09m-5-1.41c.57.07 1.02.5 1.02 1.07a1 1 0 0 1-1 1h-.63c-.32.9-.88 1.69-1.62 2.29.25.09.51.14.77.21 5.13-.07 4.53-3.2 4.53-3.25a2.59 2.59 0 0 0-2.69-2.49 1 1 0 0 1-1-1 1 1 0 0 1 1-1c1.23.03 2.41.49 3.33 1.3.05-.29.08-.59.08-.89-.06-1.24-.62-2.32-2.87-2.53-1.25-2.96-4.4-1.32-4.4-.4-.03.23.21.72.25.75a1 1 0 0 1 1 1c0 .55-.45 1-1 1-.53-.02-1.03-.22-1.43-.56-.48.31-1.03.5-1.6.56-.57.05-1.04-.35-1.07-.9a.97.97 0 0 1 .88-1.1c.16-.02.94-.14.94-.77 0-.66.25-1.29.68-1.79-.92-.25-1.91.08-2.91 1.29C6.75 5 6 5.25 5.45 7.2 4.5 7.67 4 8 3.78 9c1.08-.22 2.19-.13 3.22.25.5.19.78.75.59 1.29-.19.52-.77.78-1.29.59-.73-.32-1.55-.34-2.3-.06-.32.27-.32.83-.32 1.27 0 .74.37 1.43 1 1.83.53.27 1.12.41 1.71.4q-.225-.39-.39-.81a1.038 1.038 0 0 1 1.96-.68c.4 1.14 1.42 1.92 2.62 2.05 1.37-.07 2.59-.88 3.19-2.13.23-1.38 1.34-1.5 2.56-1.5m2 7.47-.62-1.3-.71.16 1 1.25zm-4.65-8.61a1 1 0 0 0-.91-1.03c-.71-.04-1.4.2-1.93.67-.57.58-.87 1.38-.84 2.19a1 1 0 0 0 1 1c.57 0 1-.45 1-1 0-.27.07-.54.23-.76.12-.1.27-.15.43-.15.55.03 1.02-.38 1.02-.92"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Adding Knowledge to LLMs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              1. Data curation & synthetic data
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/vinothss/add_llmknowledge" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    vinothss/add_llmknowledge
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Adding Knowledge to LLMs" class="md-nav__button md-logo" aria-label="Adding Knowledge to LLMs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.33 12.91c.09 1.55-.62 3.04-1.89 3.95l.77 1.49c.23.45.26.98.06 1.45-.19.47-.58.84-1.06 1l-.79.25a1.687 1.687 0 0 1-1.86-.55L14.44 18c-.89-.15-1.73-.53-2.44-1.1-.5.15-1 .23-1.5.23-.88 0-1.76-.27-2.5-.79-.53.16-1.07.23-1.62.22-.79.01-1.57-.15-2.3-.45a4.1 4.1 0 0 1-2.43-3.61c-.08-.72.04-1.45.35-2.11-.29-.75-.32-1.57-.07-2.33C2.3 7.11 3 6.32 3.87 5.82c.58-1.69 2.21-2.82 4-2.7 1.6-1.5 4.05-1.66 5.83-.37.42-.11.86-.17 1.3-.17 1.36-.03 2.65.57 3.5 1.64 2.04.53 3.5 2.35 3.58 4.47.05 1.11-.25 2.2-.86 3.13.07.36.11.72.11 1.09m-5-1.41c.57.07 1.02.5 1.02 1.07a1 1 0 0 1-1 1h-.63c-.32.9-.88 1.69-1.62 2.29.25.09.51.14.77.21 5.13-.07 4.53-3.2 4.53-3.25a2.59 2.59 0 0 0-2.69-2.49 1 1 0 0 1-1-1 1 1 0 0 1 1-1c1.23.03 2.41.49 3.33 1.3.05-.29.08-.59.08-.89-.06-1.24-.62-2.32-2.87-2.53-1.25-2.96-4.4-1.32-4.4-.4-.03.23.21.72.25.75a1 1 0 0 1 1 1c0 .55-.45 1-1 1-.53-.02-1.03-.22-1.43-.56-.48.31-1.03.5-1.6.56-.57.05-1.04-.35-1.07-.9a.97.97 0 0 1 .88-1.1c.16-.02.94-.14.94-.77 0-.66.25-1.29.68-1.79-.92-.25-1.91.08-2.91 1.29C6.75 5 6 5.25 5.45 7.2 4.5 7.67 4 8 3.78 9c1.08-.22 2.19-.13 3.22.25.5.19.78.75.59 1.29-.19.52-.77.78-1.29.59-.73-.32-1.55-.34-2.3-.06-.32.27-.32.83-.32 1.27 0 .74.37 1.43 1 1.83.53.27 1.12.41 1.71.4q-.225-.39-.39-.81a1.038 1.038 0 0 1 1.96-.68c.4 1.14 1.42 1.92 2.62 2.05 1.37-.07 2.59-.88 3.19-2.13.23-1.38 1.34-1.5 2.56-1.5m2 7.47-.62-1.3-.71.16 1 1.25zm-4.65-8.61a1 1 0 0 0-.91-1.03c-.71-.04-1.4.2-1.93.67-.57.58-.87 1.38-.84 2.19a1 1 0 0 0 1 1c.57 0 1-.45 1-1 0-.27.07-.54.23-.76.12-.1.27-.15.43-.15.55.03 1.02-.38 1.02-.92"/></svg>
+
+    </a>
+    Adding Knowledge to LLMs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/vinothss/add_llmknowledge" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    vinothss/add_llmknowledge
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Modules
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Data curation & synthetic data
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Data curation & synthetic data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-situation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The situation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The situation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-this-matters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why this matters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-plan-a-funnel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The plan: a funnel
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-a-curate-the-documents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part A: Curate the documents
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part A: Curate the documents">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-look-at-the-raw-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Look at the raw data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-clean-the-text" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Clean the text
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-filter-out-junk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Filter out junk
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-remove-duplicates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Remove duplicates
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 4: Remove duplicates">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-duplicates-hurt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why duplicates hurt
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exact-copies-hashing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exact copies: hashing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#near-copies-minhash" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Near copies: MinHash
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#choosing-the-threshold" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choosing the threshold
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-redact-personal-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Redact personal data
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 5: Redact personal data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-counts-as-personal-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What counts as personal data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-presidio-finds-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Presidio finds it
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dont-redact-too-much" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Don't redact too much
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-a-result" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part A result
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-b-turn-the-documents-into-training-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part B: Turn the documents into training examples
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part B: Turn the documents into training examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-6-generate-question-answer-pairs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Generate question-answer pairs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 6: Generate question-answer pairs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-generate-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why generate data?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-approaches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common approaches
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-7-keep-only-faithful-pairs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7: Keep only faithful pairs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 7: Keep only faithful pairs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-can-go-wrong-with-synthetic-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What can go wrong with synthetic data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-grounding-filter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The grounding filter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-word-overlap-isnt-enough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When word overlap isn't enough
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wrap-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wrap-up
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Wrap-up">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key takeaways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#at-production-scale-nvidia-nemo-curator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        At production scale: NVIDIA NeMo Curator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-pitfalls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common pitfalls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#knowledge-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Knowledge check
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#glossary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Glossary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further reading
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Evaluating LLMs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-customization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. Customising LLMs (CPT, SFT, DPO)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-optimization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. Optimising for deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-assessment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5. Assessment - Safety alignment with DPO
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-situation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The situation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The situation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-this-matters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why this matters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-plan-a-funnel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The plan: a funnel
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-a-curate-the-documents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part A: Curate the documents
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part A: Curate the documents">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-look-at-the-raw-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Look at the raw data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-clean-the-text" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Clean the text
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-filter-out-junk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Filter out junk
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-remove-duplicates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Remove duplicates
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 4: Remove duplicates">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-duplicates-hurt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why duplicates hurt
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exact-copies-hashing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exact copies: hashing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#near-copies-minhash" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Near copies: MinHash
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#choosing-the-threshold" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choosing the threshold
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-redact-personal-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Redact personal data
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 5: Redact personal data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-counts-as-personal-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What counts as personal data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-presidio-finds-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Presidio finds it
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dont-redact-too-much" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Don't redact too much
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-a-result" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part A result
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-b-turn-the-documents-into-training-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part B: Turn the documents into training examples
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part B: Turn the documents into training examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-6-generate-question-answer-pairs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Generate question-answer pairs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 6: Generate question-answer pairs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-generate-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why generate data?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-approaches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common approaches
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-7-keep-only-faithful-pairs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 7: Keep only faithful pairs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 7: Keep only faithful pairs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-can-go-wrong-with-synthetic-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What can go wrong with synthetic data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-grounding-filter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The grounding filter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-word-overlap-isnt-enough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When word overlap isn't enough
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wrap-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wrap-up
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Wrap-up">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key takeaways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#at-production-scale-nvidia-nemo-curator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        At production scale: NVIDIA NeMo Curator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-pitfalls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common pitfalls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#knowledge-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Knowledge check
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#glossary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Glossary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further reading
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="module-1-data-curation-synthetic-data-generation">Module 1: Data curation &amp; synthetic data generation</h1>
+<p><strong>Time:</strong> about 75 minutes, reading and lab together &nbsp;|&nbsp; <strong>Track:</strong> Free (T4), with a Pro bonus</p>
+<h2 id="the-situation">The situation</h2>
+<p>Lumora Energy, the home-battery company in this workshop's case study, wants an assistant that
+answers questions about its products: the Vault batteries, the Bridge inverter and the Lumora Home
+app. A general model knows nothing about them. Later modules teach it, but every one of those
+methods learns from <strong>data</strong>, so this module builds that data.</p>
+<p>Lumora has handed you a dump of <strong>50 documents</strong> pulled from its website, internal wiki and support
+system. As in any real company, it's a mess:</p>
+<table>
+<thead>
+<tr>
+<th>What's in the dump</th>
+<th>How many</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Useful product, policy and support documents</td>
+<td>20</td>
+</tr>
+<tr>
+<td>Exact copies of some of those documents</td>
+<td>5</td>
+</tr>
+<tr>
+<td>Lightly edited copies (a footer added, a line changed)</td>
+<td>5</td>
+</tr>
+<tr>
+<td>Raw HTML copies of web pages, with scripts and menus</td>
+<td>5</td>
+</tr>
+<tr>
+<td>Junk: a 404 page, a login prompt, a cookie banner, a blank page</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Keyword spam</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Pages in German, Spanish and Dutch</td>
+<td>3</td>
+</tr>
+<tr>
+<td>Support tickets containing customer names, emails and phone numbers</td>
+<td>6</td>
+</tr>
+</tbody>
+</table>
+<p>By the end of the module you'll have turned it into the two kinds of data that Module 3 trains on:</p>
+<ol>
+<li><strong>A curated corpus</strong>: clean, unique documents with no personal data. Module 3 uses it for
+   <em>continued pretraining</em>, which teaches the model Lumora's facts.</li>
+<li><strong>A set of question-answer pairs</strong> generated from those documents. Module 3 uses it for
+   <em>supervised fine-tuning</em>, which teaches the model to answer questions.</li>
+</ol>
+<p>Module 3 ships a larger version of both, built with this same pipeline, so it works even if you
+skip ahead; you can swap in your own files from this lab.</p>
+<h3 id="why-this-matters">Why this matters</h3>
+<p>Every training method in this workshop does the same thing: it makes the model <strong>more likely to
+produce text that looks like its training data</strong>. The model can't tell which parts you <em>meant</em> it
+to learn. Leave the dump as it is and here's what it learns:</p>
+<table>
+<thead>
+<tr>
+<th>Left in the data</th>
+<th>What the model learns</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The same page five times</td>
+<td>To recite that page word for word, at the expense of everything else</td>
+</tr>
+<tr>
+<td>Cookie banners and menus</td>
+<td>To say "Accept all cookies?" in the middle of an answer</td>
+</tr>
+<tr>
+<td>Customer emails and phone numbers</td>
+<td>To repeat them when prompted: a privacy incident</td>
+</tr>
+<tr>
+<td>German and Dutch pages</td>
+<td>To switch language at random</td>
+</tr>
+</tbody>
+</table>
+<p>Research backs this up. Deduplicating training data cut word-for-word memorisation roughly tenfold
+(Lee et al., 2022). Heavily filtered web data trains better models than larger unfiltered data
+(Hugging Face's FineWeb, 2024). And personal data that goes into a model can be pulled back out:
+researchers extracted names, phone numbers and emails from GPT-2 (Carlini et al., 2021).
+<strong>Curation is where you decide what the model knows.</strong></p>
+<h3 id="the-plan-a-funnel">The plan: a funnel</h3>
+<p>A good pipeline is a <strong>funnel</strong>. Cheap, fast steps remove most of the junk first, so slower steps
+only handle what's left. This module follows the funnel from top to bottom:</p>
+<pre class="mermaid"><code>flowchart TB
+  subgraph A["Part A: curate the documents"]
+    direction LR
+    R[Raw dump&lt;br/&gt;50 docs] --&gt; C[2. Clean] --&gt; F[3. Filter junk] --&gt; D[4. Remove&lt;br/&gt;duplicates] --&gt; P[5. Redact&lt;br/&gt;personal data] --&gt; O[Curated corpus&lt;br/&gt;26 docs]
+  end
+  subgraph B["Part B: turn them into training examples"]
+    direction LR
+    G[6. Generate&lt;br/&gt;Q&amp;A pairs] --&gt; V[7. Keep only&lt;br/&gt;faithful pairs] --&gt; Q[Q&amp;A set]
+  end
+  A --&gt; B</code></pre>
+<p><strong>Part A</strong> (steps 1-5) curates the documents; Step 1 is looking at the raw data. <strong>Part B</strong>
+(steps 6-7) turns the curated documents into training examples.</p>
+<div class="lab-card">
+<p><strong>Open the lab now and work through it alongside this page</strong></p>
+<p><a href="https://colab.research.google.com/github/vinothss/add_llmknowledge/blob/main/notebooks/01_data_curation.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
+<p>The notebook uses the same step numbers as this page. Each step below ends with a
+<strong>▶ Lab</strong> box that tells you which exercise to do. Every exercise has an automatic check.</p>
+<table>
+<thead>
+<tr>
+<th>Exercise</th>
+<th>Step</th>
+<th>The check confirms</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. <code>clean_text</code></td>
+<td>2</td>
+<td>6 unit tests pass</td>
+</tr>
+<tr>
+<td>2. Quality filters</td>
+<td>3</td>
+<td>junk, spam and foreign pages removed; all good documents kept</td>
+</tr>
+<tr>
+<td>3. Deduplication</td>
+<td>4</td>
+<td>exactly 20 unique knowledge documents remain</td>
+</tr>
+<tr>
+<td>4. PII redaction</td>
+<td>5</td>
+<td>no emails, phones or names left; error codes kept</td>
+</tr>
+<tr>
+<td>5. Synthetic Q&amp;A</td>
+<td>6-7</td>
+<td>at least 20 pairs, all grounded in their source</td>
+</tr>
+<tr>
+<td>Pro bonus</td>
+<td>7</td>
+<td>LLM-as-a-judge filtering (Colab Pro only)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr />
+<h2 id="part-a-curate-the-documents">Part A: Curate the documents</h2>
+<h3 id="step-1-look-at-the-raw-data">Step 1: Look at the raw data</h3>
+<p>Before writing a single rule, <strong>look at the data</strong>. Every rule in a real pipeline should trace
+back to a problem someone <em>saw</em>. Rules written without looking remove good data and miss bad data.</p>
+<div class="admonition example">
+<p class="admonition-title">▶ Lab: Step 1</p>
+<p>Run the setup cells, then scroll through the raw table. Try to spot each problem from the
+table above: the HTML, the copies, the junk pages, the foreign languages and the customer
+details. Which would hurt the model most if left in?</p>
+</div>
+<p>The first thing you'll notice is that many documents are mostly <em>not</em> text: they're HTML. That's
+the first job.</p>
+<hr />
+<h3 id="step-2-clean-the-text">Step 2: Clean the text</h3>
+<p>A scraped product page is mostly tags, scripts, menus, cookie notices and footers wrapped around
+a few paragraphs of real content. Cleaning extracts the content:</p>
+<ol>
+<li><strong>Remove <code>&lt;script&gt;</code> and <code>&lt;style&gt;</code> blocks, including their contents.</strong> Removing only the tags
+   leaves raw JavaScript in your training data.</li>
+<li><strong>Strip the remaining tags</strong>, keeping line breaks so later rules can work line by line.</li>
+<li><strong>Decode HTML entities:</strong> <code>&amp;amp;</code> becomes <code>&amp;</code>, <code>&amp;lt;</code> becomes <code>&lt;</code>.</li>
+<li><strong>Normalise unicode.</strong> There are many ways to write "the same" character: non-breaking spaces,
+   full-width digits, zero-width characters. <strong><a href="https://en.wikipedia.org/wiki/Unicode_equivalence">NFKC normalisation</a></strong>
+   maps them to one standard form, so "10.2 kWh" with an odd space is treated like normal text.</li>
+<li><strong>Remove boilerplate lines</strong> such as menus, footers and "Subscribe to our newsletter". The lab
+   uses simple line patterns. Production tools such as <code>trafilatura</code> use page layout and text
+   density instead.</li>
+<li><strong>Collapse repeated whitespace.</strong></li>
+</ol>
+<div class="admonition example">
+<p class="admonition-title">▶ Lab: Exercise 1, write <code>clean_text</code></p>
+<p>Implement the six steps, run the check, and compare a document before and after cleaning.</p>
+</div>
+<p>Clean text shows the next problem clearly: some documents have no useful content at all.</p>
+<hr />
+<h3 id="step-3-filter-out-junk">Step 3: Filter out junk</h3>
+<p>With the HTML gone, you can judge documents by their text. Large pretraining projects publish
+their filter rules, and they're surprisingly simple. DeepMind's Gopher rules (Rae et al., 2021)
+and Google's C4 rules (Raffel et al., 2020) include:</p>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Catches</th>
+<th>Example threshold</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Word count</td>
+<td>Empty pages, "404", cookie notices</td>
+<td>Keep 50-100,000 words (Gopher)</td>
+</tr>
+<tr>
+<td>Mean word length</td>
+<td>Gibberish, minified code</td>
+<td>3-10 characters</td>
+</tr>
+<tr>
+<td>Symbol-to-word ratio</td>
+<td>Hashtag spam, code dumps</td>
+<td>Under 0.1 for <code>#</code> or <code>...</code></td>
+</tr>
+<tr>
+<td>Stopword presence</td>
+<td>Tables, lists, keyword spam</td>
+<td>At least 2 common English words</td>
+</tr>
+<tr>
+<td>Repeated lines or word pairs</td>
+<td>Templated spam</td>
+<td>Top 2-gram covers under 20% of text</td>
+</tr>
+<tr>
+<td>Lines ending in punctuation</td>
+<td>Menus, fragments</td>
+<td>C4 keeps only such lines</td>
+</tr>
+</tbody>
+</table>
+<p>Lumora's documents are short, so the lab uses three rules sized for them:</p>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Removes from the Lumora dump</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Word count of at least 20</strong></td>
+<td>The 404 page, login prompt, cookie banner and blank page</td>
+</tr>
+<tr>
+<td><strong>Unique-word ratio of at least 0.35</strong> (unique words ÷ total words)</td>
+<td>The keyword spam, which scores around 0.05</td>
+</tr>
+<tr>
+<td><strong>Language ID</strong>: <code>langdetect</code> says English with probability of at least 0.9</td>
+<td>The German, Spanish and Dutch pages</td>
+</tr>
+</tbody>
+</table>
+<details class="info">
+<summary>Why use a language identifier instead of checking for English words?</summary>
+<p>Checking for common English words sounds simpler, but it fails on short texts. A Dutch sentence
+like "Lumora Energy is in 2017 opgericht in Rotterdam" contains the English words "is" and
+"in", and can score higher than a short English support ticket. A trained language identifier
+looks at character patterns across the whole text and is far more reliable. NeMo Curator uses
+fastText's language-ID model, which covers 176 languages.</p>
+</details>
+<div class="admonition example">
+<p class="admonition-title">▶ Lab: Exercise 2, write <code>quality_filter</code></p>
+<p>Implement the three rules. The check confirms every junk, spam and foreign page is removed
+<em>and</em> every good document is kept. Removing good data is a failure too.</p>
+</div>
+<details class="info">
+<summary>Beyond the lab: model-based filters</summary>
+<p>Rules can tell that a page is short or repetitive, but not whether it's <em>informative</em>. Large
+pipelines add a learned filter after the rules:</p>
+<ul>
+<li><strong>Perplexity filtering</strong> (CCNet): a small language model trained on high-quality text, such
+  as Wikipedia, scores each document, and text it finds very surprising is dropped.</li>
+<li><strong>Quality classifiers</strong>: a strong LLM rates a sample of documents (for example "educational
+  value 0-5"), a small fast classifier learns from those ratings, and then it scores billions
+  of documents. FineWeb-Edu was built this way.</li>
+<li><strong>LLM judges</strong>: the most accurate and most expensive option, so used last on small sets.
+  You'll use one in Step 7 to judge Q&amp;A pairs.</li>
+</ul>
+<p>Lumora's 50 documents don't need this, which is why it isn't in the funnel above.</p>
+</details>
+<p>What's left is all real content, but much of it is the same content more than once.</p>
+<hr />
+<h3 id="step-4-remove-duplicates">Step 4: Remove duplicates</h3>
+<h4 id="why-duplicates-hurt">Why duplicates hurt</h4>
+<p>A document that appears five times gets five times the training. The model memorises it at the
+expense of everything else, wastes compute, and becomes more likely to repeat it word for word.
+Duplicates also make evaluation unreliable when test questions leak into training data, a problem
+you'll meet again in Modules 2 and 3.</p>
+<p>The Lumora dump has three kinds of copy, and they need two techniques.</p>
+<h4 id="exact-copies-hashing">Exact copies: hashing</h4>
+<p>Turn each document into a <strong>hash</strong>, a short fingerprint of its text (the lab uses MD5 of the
+lower-cased text), and keep one document per fingerprint. It's fast and certain, but it only
+catches <em>identical</em> text: change a single character and the fingerprint is completely different.</p>
+<h4 id="near-copies-minhash">Near copies: MinHash</h4>
+<p>Lumora's edited copies and HTML mirrors aren't identical, so hashing misses them. To catch them
+you need a measure of <em>how similar</em> two documents are, and a way to compute it quickly.</p>
+<ol>
+<li><strong>Turn each document into a set of shingles.</strong> A <strong><a href="https://en.wikipedia.org/wiki/W-shingling">shingle</a></strong>
+   is a run of consecutive words; the lab uses 5. "The Vault 10 weighs 98 kg" gives {"the vault 10
+   weighs 98", "vault 10 weighs 98 kg"}. Near copies share most of their shingles.</li>
+<li><strong>Measure the overlap with <a href="https://en.wikipedia.org/wiki/Jaccard_index">Jaccard similarity</a>:</strong>
+   the number of shingles two documents share, divided by the number of distinct shingles they have
+   between them. Identical documents score 1.0, a copy with one sentence added scores about 0.85,
+   and unrelated documents score close to 0.</li>
+<li><strong>Estimate it cheaply with <a href="https://en.wikipedia.org/wiki/MinHash">MinHash</a>.</strong> Comparing full
+   shingle sets is slow, so MinHash shrinks every document to a fixed signature of 128 numbers.
+   The fraction of positions where two signatures match estimates their Jaccard similarity.</li>
+<li><strong>Avoid comparing every pair with <a href="https://en.wikipedia.org/wiki/Locality-sensitive_hashing">LSH</a>.</strong>
+   Locality-sensitive hashing sorts signatures into buckets so that only likely-similar documents
+   are compared at all.</li>
+</ol>
+<details class="info">
+<summary>How it works: the maths behind MinHash and LSH</summary>
+<p><strong>Jaccard similarity</strong> of shingle sets <span class="arithmatex">\(A\)</span> and <span class="arithmatex">\(B\)</span>:</p>
+<div class="arithmatex">\[J(A, B) = \frac{|A \cap B|}{|A \cup B|}\]</div>
+<p><strong>MinHash</strong> applies a random hash function <span class="arithmatex">\(h\)</span> to every shingle and keeps only the minimum
+value. The key property is:</p>
+<div class="arithmatex">\[P\big[\min h(A) = \min h(B)\big] = J(A, B)\]</div>
+<p>The chance that two documents share a MinHash value <em>equals</em> their Jaccard similarity. Repeat
+with 128 different hash functions and the fraction of matches estimates <span class="arithmatex">\(J\)</span> closely, whatever
+the documents' length.</p>
+<p><strong>LSH.</strong> Comparing every pair of signatures is still <span class="arithmatex">\(O(n^2)\)</span>: about 500 billion comparisons for
+a million documents. LSH splits each signature into <span class="arithmatex">\(b\)</span> bands of <span class="arithmatex">\(r\)</span> rows and hashes each band
+into a bucket. Documents that share a bucket in <em>any</em> band become candidate pairs. A pair with
+similarity <span class="arithmatex">\(s\)</span> becomes a candidate with probability</p>
+<div class="arithmatex">\[P(\text{candidate}) = 1 - (1 - s^r)^b\]</div>
+<p>This is an S-shaped curve: pairs above the threshold almost always collide, and pairs well
+below almost never do. <code>datasketch</code> picks <span class="arithmatex">\(b\)</span> and <span class="arithmatex">\(r\)</span> for you from the <code>threshold</code> you give it.
+Chapter 3 of the free book <em>Mining of Massive Datasets</em> (in Further reading) explains this step
+by step.</p>
+</details>
+<h4 id="choosing-the-threshold">Choosing the threshold</h4>
+<p>The similarity threshold decides what counts as a duplicate, and it's a trade-off:</p>
+<table>
+<thead>
+<tr>
+<th>Threshold</th>
+<th>Effect</th>
+<th>Risk</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>High (0.95)</td>
+<td>Only near-identical copies removed</td>
+<td>Edited copies and HTML mirrors slip through</td>
+</tr>
+<tr>
+<td><strong>Medium (0.7)</strong></td>
+<td>Catches edited copies and HTML mirrors</td>
+<td><strong>Lab default</strong></td>
+</tr>
+<tr>
+<td>Low (0.3)</td>
+<td>Very aggressive</td>
+<td>Different documents that share boilerplate get merged</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition example">
+<p class="admonition-title">▶ Lab: Exercise 3, write <code>exact_dedup</code> and <code>fuzzy_dedup</code></p>
+<p>The check enforces both sides of the trade-off: no duplicated content left, <em>and</em> exactly 20
+unique knowledge documents kept. Then try thresholds of 0.3 and 0.95 and see what goes wrong
+at each extreme.</p>
+</div>
+<details class="info">
+<summary>Beyond the lab: semantic deduplication</summary>
+<p>MinHash finds documents that share <em>words</em>. Two documents that say the same thing in
+different words have low Jaccard similarity. <strong>Semantic deduplication</strong> (for example SemDeDup)
+turns each document into an embedding, groups similar ones, and removes items that are very
+close together. NeMo Curator supports exact, fuzzy and semantic deduplication on GPU.</p>
+</details>
+<p>The corpus is now clean and unique. One problem is left, and it's the riskiest: the support
+tickets contain real customers' details.</p>
+<hr />
+<h3 id="step-5-redact-personal-data">Step 5: Redact personal data</h3>
+<h4 id="what-counts-as-personal-data">What counts as personal data</h4>
+<p>Personally identifiable information (<strong>PII</strong>) is anything that identifies a person: names, email
+addresses, phone numbers, postal addresses, account numbers, and sometimes combinations of
+harmless-looking details. Laws such as GDPR restrict how it may be processed, and a model that
+memorises it can leak it.</p>
+<p>The support tickets are worth keeping: they show how customers describe problems. So rather than
+delete them, you <strong>redact</strong> them, replacing the personal details and keeping the rest.</p>
+<h4 id="how-presidio-finds-it">How Presidio finds it</h4>
+<p><a href="https://microsoft.github.io/presidio/">Microsoft Presidio</a> combines several detectors and gives
+each finding a confidence score:</p>
+<table>
+<thead>
+<tr>
+<th>Detector</th>
+<th>Finds</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Named-entity recognition</strong> (a spaCy model)</td>
+<td>Names, places, organisations</td>
+<td>"Maria Jansen" is a PERSON</td>
+</tr>
+<tr>
+<td><strong>Patterns with validation</strong></td>
+<td>Structured identifiers</td>
+<td>Emails; phone numbers checked with <code>phonenumbers</code></td>
+</tr>
+<tr>
+<td><strong>Context words</strong></td>
+<td>Raises confidence</td>
+<td>"call me on ..." makes a nearby number more likely to be a phone number</td>
+</tr>
+</tbody>
+</table>
+<p>You then choose what to replace each finding with:</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Output</th>
+<th>Use when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Replace</td>
+<td><code>&lt;PERSON&gt;</code></td>
+<td>Training data: keeps the sentence shape, removes the identity (lab choice)</td>
+</tr>
+<tr>
+<td>Mask</td>
+<td><code>M**** J*****</code></td>
+<td>Showing records to people</td>
+</tr>
+<tr>
+<td>Hash</td>
+<td><code>a91f3c...</code></td>
+<td>You need to link records without revealing who they are</td>
+</tr>
+<tr>
+<td>Fake replacement</td>
+<td>"Anna Smith"</td>
+<td>You want natural-looking text (keep it consistent)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="dont-redact-too-much">Don't redact too much</h4>
+<p>Redaction is a trade-off between <strong>missing personal data</strong> (a privacy risk) and <strong>redacting
+things that aren't personal</strong> (destroying knowledge). Turn on every entity type and Presidio may
+tag "E-204" or "24 months" as an identifier or a date, and those are exactly the facts the model
+should learn. The lab limits detection to <code>PERSON</code>, <code>EMAIL_ADDRESS</code> and <code>PHONE_NUMBER</code>.</p>
+<div class="admonition example">
+<p class="admonition-title">▶ Lab: Exercise 4, redact the support tickets</p>
+<p>The check confirms that no emails, phone numbers or names remain, and that error codes such as
+E-204 survive.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Small models miss things</p>
+<p>The lab uses spaCy's small English model, which is fast but imperfect. Names in unusual
+formats, or from languages it rarely saw, can slip through. Production pipelines use larger
+models, extra patterns for their own data, and <strong>spot checks by people</strong>.</p>
+</div>
+<h3 id="part-a-result">Part A result</h3>
+<p>Here's what the funnel did to Lumora's dump:</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Documents left</th>
+<th>Removed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Raw dump</td>
+<td>50</td>
+<td></td>
+</tr>
+<tr>
+<td>After filtering junk</td>
+<td>41</td>
+<td>4 junk, 2 spam, 3 foreign-language</td>
+</tr>
+<tr>
+<td>After exact deduplication</td>
+<td>36</td>
+<td>5 exact copies</td>
+</tr>
+<tr>
+<td>After near-duplicate removal</td>
+<td>26</td>
+<td>5 edited copies, 5 HTML mirrors</td>
+</tr>
+<tr>
+<td>After redaction</td>
+<td>26</td>
+<td>none removed; 6 tickets redacted</td>
+</tr>
+<tr>
+<td><strong>Curated corpus</strong></td>
+<td><strong>26</strong></td>
+<td><strong>48% of the dump discarded</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Throwing away half the raw data is normal; large web pipelines discard far more. The notebook
+saves this corpus as <code>curated_corpus.jsonl</code>.</p>
+<hr />
+<h2 id="part-b-turn-the-documents-into-training-examples">Part B: Turn the documents into training examples</h2>
+<h3 id="step-6-generate-question-answer-pairs">Step 6: Generate question-answer pairs</h3>
+<h4 id="why-generate-data">Why generate data?</h4>
+<p>The curated corpus teaches the model <em>facts</em>. But Lumora wants an assistant that <em>answers
+questions</em>, and for that the model needs examples of questions paired with good answers. Nobody
+at Lumora has written those, and writing thousands by hand is slow and expensive. A capable LLM
+can turn documents into question-answer pairs in minutes. This is called <strong>synthetic data</strong>.</p>
+<h4 id="common-approaches">Common approaches</h4>
+<table>
+<thead>
+<tr>
+<th>Approach</th>
+<th>How it works</th>
+<th>Used for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Grounded generation</strong></td>
+<td>Give the LLM a source document and ask for Q&amp;A pairs about it</td>
+<td>Domain knowledge (this lab)</td>
+</tr>
+<tr>
+<td><strong>Self-Instruct</strong></td>
+<td>Start from seed tasks; the LLM writes new tasks and answers; filter; repeat</td>
+<td>General instruction data</td>
+</tr>
+<tr>
+<td><strong>Evol-Instruct</strong></td>
+<td>The LLM rewrites instructions to be harder or more varied</td>
+<td>Complex reasoning data</td>
+</tr>
+<tr>
+<td><strong>Persona-driven</strong></td>
+<td>Ask the same thing as different kinds of user</td>
+<td>Variety</td>
+</tr>
+<tr>
+<td><strong>Distillation</strong></td>
+<td>A strong "teacher" model answers prompts for a smaller "student"</td>
+<td>Transferring ability (Module 4)</td>
+</tr>
+</tbody>
+</table>
+<p>The lab uses grounded generation: the model reads each knowledge document (not the support
+tickets) and writes four question-answer pairs about specific facts in it.</p>
+<div class="admonition example">
+<p class="admonition-title">▶ Lab: Exercise 5, part 1: generate candidates</p>
+<p>Read the generation prompt, run it over the knowledge documents, and look at a few of the
+candidate pairs it produces.</p>
+</div>
+<p>Read a few candidates and you'll see why the next step exists: some answers sound right but
+aren't in the document.</p>
+<hr />
+<h3 id="step-7-keep-only-faithful-pairs">Step 7: Keep only faithful pairs</h3>
+<h4 id="what-can-go-wrong-with-synthetic-data">What can go wrong with synthetic data</h4>
+<table>
+<thead>
+<tr>
+<th>Risk</th>
+<th>What it looks like</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallucination</strong></td>
+<td>The answer states a fact the document doesn't contain</td>
+<td><strong>Grounding filter</strong>, LLM judge</td>
+</tr>
+<tr>
+<td><strong>Low variety</strong></td>
+<td>80 versions of "What is X?"</td>
+<td>Ask for varied question types; remove duplicate questions</td>
+</tr>
+<tr>
+<td><strong>Format errors</strong></td>
+<td>Missing question marks, two pairs merged into one</td>
+<td>Parse and validate the format</td>
+</tr>
+<tr>
+<td><strong>Model collapse</strong></td>
+<td>Models trained on model output, generation after generation, get worse (Shumailov et al., 2024)</td>
+<td>Keep real data in the mix; check synthetic data</td>
+</tr>
+<tr>
+<td><strong>Licence terms</strong></td>
+<td>Some model licences restrict using their output to train other models</td>
+<td>Check the generator's terms</td>
+</tr>
+</tbody>
+</table>
+<h4 id="the-grounding-filter">The grounding filter</h4>
+<p>For each generated answer, take its <strong>content words</strong> (dropping "the", "is" and other common
+words) and measure what fraction also appear in the source document:</p>
+<div class="arithmatex">\[\text{overlap} = \frac{|\text{content}(\text{answer}) \cap \text{content}(\text{document})|}{|\text{content}(\text{answer})|}\]</div>
+<p>Keep the pair if the overlap is at least 0.6. It's crude, since a paraphrase may use different
+words, but it reliably catches answers that bring in facts from nowhere, such as "Anyone who has
+observed unusual conditions should check for ventilation gaps" when the document says nothing
+about it.</p>
+<div class="admonition example">
+<p class="admonition-title">▶ Lab: Exercise 5, part 2: write the grounding filter</p>
+<p>Implement <code>is_grounded</code>, drop duplicate questions, and run the check. Look at the rejected
+pairs: would you want the model to learn them?</p>
+</div>
+<h4 id="when-word-overlap-isnt-enough">When word overlap isn't enough</h4>
+<p>Word overlap can't check that an answer is <em>correct</em>. "The warranty is 15 years" overlaps well
+with a document that says "12-year warranty". Catching that needs a model that reads the
+document and the answer together: an <strong>LLM judge</strong>.</p>
+<div class="admonition example">
+<p class="admonition-title">▶ Lab: Pro bonus, LLM-as-a-judge (Colab Pro only)</p>
+<p>On an L4 or A100 runtime, a 7B model grades each pair from 1 to 5 for faithfulness, and you
+keep only pairs scored 4 or 5. On the free T4 the notebook skips this cell. Module 2 spends a
+whole section on making judges like this trustworthy.</p>
+</div>
+<p>The notebook saves the Q&amp;A set as <code>sft_qa.jsonl</code>.</p>
+<div class="lab-complete" data-id="m01"></div>
+
+<hr />
+<h2 id="wrap-up">Wrap-up</h2>
+<h3 id="key-takeaways">Key takeaways</h3>
+<ul>
+<li><strong>Look at the data first.</strong> Every rule in this module came from a problem visible in the raw
+  table.</li>
+<li><strong>Cheap steps first, expensive steps last.</strong> Rules and hashing remove most of the junk for almost
+  no compute; LLMs only see what survives.</li>
+<li><strong>Every filter is a trade-off.</strong> Too strict and you lose good data; too loose and junk gets
+  through. The checks in this lab test both sides.</li>
+<li><strong>Synthetic data needs checking.</strong> Generating pairs is easy; making sure they're faithful to
+  the source is the real work.</li>
+</ul>
+<h3 id="at-production-scale-nvidia-nemo-curator">At production scale: NVIDIA NeMo Curator</h3>
+<p>The lab uses small open-source libraries so it runs on a free GPU.
+<a href="https://github.com/NVIDIA/NeMo-Curator">NeMo Curator</a> runs the <em>same</em> steps on GPUs and across
+many machines, for terabytes of data:</p>
+<table>
+<thead>
+<tr>
+<th>Lab</th>
+<th>NeMo Curator</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>clean_text</code></td>
+<td><code>UnicodeReformatter</code>, custom <code>DocumentModifier</code></td>
+</tr>
+<tr>
+<td>Word-count and repetition rules</td>
+<td><code>WordCountFilter</code>, <code>RepeatingTopNGramsFilter</code> and other filters via <code>ScoreFilter</code></td>
+</tr>
+<tr>
+<td><code>langdetect</code></td>
+<td><code>FastTextLangId</code></td>
+</tr>
+<tr>
+<td>MD5 / MinHash</td>
+<td><code>ExactDuplicates</code> / <code>FuzzyDuplicates</code>, plus semantic deduplication</td>
+</tr>
+<tr>
+<td>Presidio</td>
+<td><code>PiiModifier</code></td>
+</tr>
+<tr>
+<td>Q&amp;A generation and filtering</td>
+<td>Synthetic data pipelines, quality classifiers, reward-model filtering</td>
+</tr>
+</tbody>
+</table>
+<h3 id="common-pitfalls">Common pitfalls</h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Writing filters without looking at the data first</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Removing <code>&lt;script&gt;</code> tags but leaving the code inside them</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Removing only exact copies, so edited copies and HTML mirrors survive</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Never tuning the deduplication threshold</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Redacting every entity type, so error codes and numbers disappear</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Trusting synthetic data without checking it against the source</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Not recording what each step removed, so you can't explain or reproduce the dataset</li>
+</ul>
+<h3 id="knowledge-check">Knowledge check</h3>
+<script type="application/json" class="quiz" data-id="m01">
+[
+  {"q": "Why should cheap rule-based filters run before model-based quality filters?",
+   "options": ["They are more accurate", "They remove most junk for little compute, so expensive models only see what is left", "Model-based filters cannot read HTML", "It doesn't matter which runs first"],
+   "answer": 1, "why": "Curation is a funnel: spend compute only on the data that survives the cheap steps."},
+  {"q": "After cleaning, an HTML copy of a page still has a different MD5 hash from the original. Which step catches it?",
+   "options": ["Exact deduplication", "Language identification", "Near-duplicate removal with MinHash", "PII redaction"],
+   "answer": 2, "why": "Small differences change the hash completely; MinHash estimates the overlap of shingles instead."},
+  {"q": "What property makes MinHash useful?",
+   "options": ["It encrypts documents", "The probability that two documents share a MinHash value equals their Jaccard similarity", "It always finds exact duplicates", "It translates documents into English"],
+   "answer": 1, "why": "The match rate over many hash functions estimates similarity from a fixed-size signature."},
+  {"q": "You lower the MinHash threshold from 0.7 to 0.3. What is the most likely effect?",
+   "options": ["More near-duplicates slip through", "Different documents start being removed as 'duplicates'", "Nothing changes", "Deduplication becomes faster and more accurate"],
+   "answer": 1, "why": "A lower threshold catches more copies but also merges different documents that share boilerplate."},
+  {"q": "Why does the lab limit Presidio to PERSON, EMAIL_ADDRESS and PHONE_NUMBER?",
+   "options": ["Other entities are not supported", "To avoid redacting useful knowledge such as error codes and product numbers", "It makes Presidio run on GPU", "Because the documents are in English"],
+   "answer": 1, "why": "Over-redaction destroys the knowledge we're trying to teach (E-204, 10.2 kWh...)."},
+  {"q": "A synthetic answer says the Vault warranty is 15 years, but the source says 12. Will the word-overlap grounding filter reliably catch it?",
+   "options": ["Yes, always", "No: most of the answer's words still overlap, which is why an LLM judge is added", "Yes, because numbers are weighted heavily", "Only if the answer is long"],
+   "answer": 1, "why": "Overlap catches invented content, not subtly wrong values. Correctness needs a judge."}
+]
+</script>
+
+<h3 id="glossary">Glossary</h3>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Boilerplate</strong></td>
+<td>Repeated non-content text: menus, footers, cookie notices</td>
+</tr>
+<tr>
+<td><a href="https://en.wikipedia.org/wiki/Unicode_equivalence"><strong>NFKC</strong></a></td>
+<td>A unicode normalisation form that maps equivalent characters to one standard form</td>
+</tr>
+<tr>
+<td><a href="https://en.wikipedia.org/wiki/W-shingling"><strong>Shingle</strong></a></td>
+<td>A run of k consecutive words, used to represent a document as a set</td>
+</tr>
+<tr>
+<td><a href="https://en.wikipedia.org/wiki/Jaccard_index"><strong>Jaccard similarity</strong></a></td>
+<td>Shared items divided by all distinct items across two sets</td>
+</tr>
+<tr>
+<td><a href="https://en.wikipedia.org/wiki/MinHash"><strong>MinHash</strong></a></td>
+<td>A compact signature whose match rate estimates Jaccard similarity</td>
+</tr>
+<tr>
+<td><a href="https://en.wikipedia.org/wiki/Locality-sensitive_hashing"><strong>LSH</strong></a></td>
+<td>A bucketing scheme that finds likely-similar pairs without comparing every pair</td>
+</tr>
+<tr>
+<td><a href="https://en.wikipedia.org/wiki/Personal_data"><strong>PII</strong></a></td>
+<td>Personally identifiable information</td>
+</tr>
+<tr>
+<td><a href="https://en.wikipedia.org/wiki/Named-entity_recognition"><strong>NER</strong></a></td>
+<td>Named-entity recognition: a model that tags names, places and organisations</td>
+</tr>
+<tr>
+<td><strong>Grounding</strong></td>
+<td>Whether a generated answer is supported by its source document</td>
+</tr>
+<tr>
+<td><a href="https://en.wikipedia.org/wiki/Model_collapse"><strong>Model collapse</strong></a></td>
+<td>Quality loss from repeatedly training on model-generated data</td>
+</tr>
+</tbody>
+</table>
+<h3 id="further-reading">Further reading</h3>
+<p><strong>Papers</strong></p>
+<ul>
+<li>Lee et al. (2022), <a href="https://arxiv.org/abs/2107.06499"><em>Deduplicating Training Data Makes Language Models Better</em></a></li>
+<li>Penedo et al. (2024), <a href="https://arxiv.org/abs/2406.17557"><em>The FineWeb Datasets: Decanting the Web for the Finest Text Data at Scale</em></a></li>
+<li>Rae et al. (2021), <a href="https://arxiv.org/abs/2112.11446"><em>Scaling Language Models: Methods, Analysis &amp; Insights from Training Gopher</em></a> (Appendix: quality filters)</li>
+<li>Broder (1997), <a href="https://doi.org/10.1109/SEQUEN.1997.666900"><em>On the Resemblance and Containment of Documents</em></a> (MinHash)</li>
+<li>Carlini et al. (2021), <a href="https://arxiv.org/abs/2012.07805"><em>Extracting Training Data from Large Language Models</em></a></li>
+<li>Wang et al. (2023), <a href="https://arxiv.org/abs/2212.10560"><em>Self-Instruct: Aligning Language Models with Self-Generated Instructions</em></a></li>
+<li>Shumailov et al. (2024), <a href="https://doi.org/10.1038/s41586-024-07566-y"><em>AI models collapse when trained on recursively generated data</em></a></li>
+</ul>
+<p><strong>Concepts and tools</strong></p>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Jaccard_index">Jaccard index (Wikipedia)</a></li>
+<li><a href="https://en.wikipedia.org/wiki/W-shingling">w-shingling (Wikipedia)</a></li>
+<li><a href="https://en.wikipedia.org/wiki/MinHash">MinHash (Wikipedia)</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Locality-sensitive_hashing">Locality-sensitive hashing (Wikipedia)</a></li>
+<li><a href="http://www.mmds.org/">Leskovec, Rajaraman &amp; Ullman, <em>Mining of Massive Datasets</em>, chapter 3: Finding Similar Items (free book; the clearest explanation of shingling, MinHash and LSH)</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Unicode_equivalence">Unicode equivalence and normalisation forms, including NFKC (Wikipedia)</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Language_identification">Language identification (Wikipedia)</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Named-entity_recognition">Named-entity recognition (Wikipedia)</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Personal_data">Personal data and GDPR (Wikipedia)</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Model_collapse">Model collapse (Wikipedia)</a></li>
+<li><a href="https://ekzhu.com/datasketch/lsh.html">datasketch: MinHash LSH documentation</a></li>
+<li><a href="https://microsoft.github.io/presidio/">Microsoft Presidio documentation</a></li>
+<li><a href="https://pypi.org/project/langdetect/">langdetect (PyPI)</a></li>
+<li><a href="https://trafilatura.readthedocs.io/">trafilatura: web text extraction</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../../getting-started/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Getting started">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Getting started
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../02-evaluation/" class="md-footer__link md-footer__link--next" aria-label="Next: 2. Evaluating LLMs">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                2. Evaluating LLMs
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.footer", "navigation.top", "content.code.copy", "search.highlight"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+        <script src="../../javascripts/portal.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

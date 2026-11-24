@@ -1,0 +1,2614 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Self-paced, hands-on workshop - curate data, evaluate, customise (CPT / SFT / DPO) and optimise LLMs on Google Colab.">
+      
+      
+      
+        <link rel="canonical" href="https://vinothss.github.io/add_llmknowledge/modules/03-customization/">
+      
+      
+        <link rel="prev" href="../02-evaluation/">
+      
+      
+        <link rel="next" href="../04-optimization/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.2">
+    
+    
+      
+        <title>3. Customising LLMs (CPT, SFT, DPO) - Adding Knowledge to LLMs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#module-3-customising-llms-cpt-sft-dpo" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Adding Knowledge to LLMs" class="md-header__button md-logo" aria-label="Adding Knowledge to LLMs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.33 12.91c.09 1.55-.62 3.04-1.89 3.95l.77 1.49c.23.45.26.98.06 1.45-.19.47-.58.84-1.06 1l-.79.25a1.687 1.687 0 0 1-1.86-.55L14.44 18c-.89-.15-1.73-.53-2.44-1.1-.5.15-1 .23-1.5.23-.88 0-1.76-.27-2.5-.79-.53.16-1.07.23-1.62.22-.79.01-1.57-.15-2.3-.45a4.1 4.1 0 0 1-2.43-3.61c-.08-.72.04-1.45.35-2.11-.29-.75-.32-1.57-.07-2.33C2.3 7.11 3 6.32 3.87 5.82c.58-1.69 2.21-2.82 4-2.7 1.6-1.5 4.05-1.66 5.83-.37.42-.11.86-.17 1.3-.17 1.36-.03 2.65.57 3.5 1.64 2.04.53 3.5 2.35 3.58 4.47.05 1.11-.25 2.2-.86 3.13.07.36.11.72.11 1.09m-5-1.41c.57.07 1.02.5 1.02 1.07a1 1 0 0 1-1 1h-.63c-.32.9-.88 1.69-1.62 2.29.25.09.51.14.77.21 5.13-.07 4.53-3.2 4.53-3.25a2.59 2.59 0 0 0-2.69-2.49 1 1 0 0 1-1-1 1 1 0 0 1 1-1c1.23.03 2.41.49 3.33 1.3.05-.29.08-.59.08-.89-.06-1.24-.62-2.32-2.87-2.53-1.25-2.96-4.4-1.32-4.4-.4-.03.23.21.72.25.75a1 1 0 0 1 1 1c0 .55-.45 1-1 1-.53-.02-1.03-.22-1.43-.56-.48.31-1.03.5-1.6.56-.57.05-1.04-.35-1.07-.9a.97.97 0 0 1 .88-1.1c.16-.02.94-.14.94-.77 0-.66.25-1.29.68-1.79-.92-.25-1.91.08-2.91 1.29C6.75 5 6 5.25 5.45 7.2 4.5 7.67 4 8 3.78 9c1.08-.22 2.19-.13 3.22.25.5.19.78.75.59 1.29-.19.52-.77.78-1.29.59-.73-.32-1.55-.34-2.3-.06-.32.27-.32.83-.32 1.27 0 .74.37 1.43 1 1.83.53.27 1.12.41 1.71.4q-.225-.39-.39-.81a1.038 1.038 0 0 1 1.96-.68c.4 1.14 1.42 1.92 2.62 2.05 1.37-.07 2.59-.88 3.19-2.13.23-1.38 1.34-1.5 2.56-1.5m2 7.47-.62-1.3-.71.16 1 1.25zm-4.65-8.61a1 1 0 0 0-.91-1.03c-.71-.04-1.4.2-1.93.67-.57.58-.87 1.38-.84 2.19a1 1 0 0 0 1 1c.57 0 1-.45 1-1 0-.27.07-.54.23-.76.12-.1.27-.15.43-.15.55.03 1.02-.38 1.02-.92"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Adding Knowledge to LLMs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              3. Customising LLMs (CPT, SFT, DPO)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="amber"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/vinothss/add_llmknowledge" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    vinothss/add_llmknowledge
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Adding Knowledge to LLMs" class="md-nav__button md-logo" aria-label="Adding Knowledge to LLMs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.33 12.91c.09 1.55-.62 3.04-1.89 3.95l.77 1.49c.23.45.26.98.06 1.45-.19.47-.58.84-1.06 1l-.79.25a1.687 1.687 0 0 1-1.86-.55L14.44 18c-.89-.15-1.73-.53-2.44-1.1-.5.15-1 .23-1.5.23-.88 0-1.76-.27-2.5-.79-.53.16-1.07.23-1.62.22-.79.01-1.57-.15-2.3-.45a4.1 4.1 0 0 1-2.43-3.61c-.08-.72.04-1.45.35-2.11-.29-.75-.32-1.57-.07-2.33C2.3 7.11 3 6.32 3.87 5.82c.58-1.69 2.21-2.82 4-2.7 1.6-1.5 4.05-1.66 5.83-.37.42-.11.86-.17 1.3-.17 1.36-.03 2.65.57 3.5 1.64 2.04.53 3.5 2.35 3.58 4.47.05 1.11-.25 2.2-.86 3.13.07.36.11.72.11 1.09m-5-1.41c.57.07 1.02.5 1.02 1.07a1 1 0 0 1-1 1h-.63c-.32.9-.88 1.69-1.62 2.29.25.09.51.14.77.21 5.13-.07 4.53-3.2 4.53-3.25a2.59 2.59 0 0 0-2.69-2.49 1 1 0 0 1-1-1 1 1 0 0 1 1-1c1.23.03 2.41.49 3.33 1.3.05-.29.08-.59.08-.89-.06-1.24-.62-2.32-2.87-2.53-1.25-2.96-4.4-1.32-4.4-.4-.03.23.21.72.25.75a1 1 0 0 1 1 1c0 .55-.45 1-1 1-.53-.02-1.03-.22-1.43-.56-.48.31-1.03.5-1.6.56-.57.05-1.04-.35-1.07-.9a.97.97 0 0 1 .88-1.1c.16-.02.94-.14.94-.77 0-.66.25-1.29.68-1.79-.92-.25-1.91.08-2.91 1.29C6.75 5 6 5.25 5.45 7.2 4.5 7.67 4 8 3.78 9c1.08-.22 2.19-.13 3.22.25.5.19.78.75.59 1.29-.19.52-.77.78-1.29.59-.73-.32-1.55-.34-2.3-.06-.32.27-.32.83-.32 1.27 0 .74.37 1.43 1 1.83.53.27 1.12.41 1.71.4q-.225-.39-.39-.81a1.038 1.038 0 0 1 1.96-.68c.4 1.14 1.42 1.92 2.62 2.05 1.37-.07 2.59-.88 3.19-2.13.23-1.38 1.34-1.5 2.56-1.5m2 7.47-.62-1.3-.71.16 1 1.25zm-4.65-8.61a1 1 0 0 0-.91-1.03c-.71-.04-1.4.2-1.93.67-.57.58-.87 1.38-.84 2.19a1 1 0 0 0 1 1c.57 0 1-.45 1-1 0-.27.07-.54.23-.76.12-.1.27-.15.43-.15.55.03 1.02-.38 1.02-.92"/></svg>
+
+    </a>
+    Adding Knowledge to LLMs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/vinothss/add_llmknowledge" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    vinothss/add_llmknowledge
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Modules
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-data-curation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Data curation & synthetic data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Evaluating LLMs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. Customising LLMs (CPT, SFT, DPO)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. Customising LLMs (CPT, SFT, DPO)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-situation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The situation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The situation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-the-model-needs-training" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why the model needs training
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#three-goals-three-techniques" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Three goals, three techniques
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The plan
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-a-teach-the-facts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part A: Teach the facts
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part A: Teach the facts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-measure-the-baseline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Measure the baseline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-continued-pretraining-cpt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Continued pretraining (CPT)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 2: Continued pretraining (CPT)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-objective" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The objective
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#memorising-vs-knowing-why-paraphrases-matter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Memorising vs knowing: why paraphrases matter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#full-fine-tuning-not-lora-for-cpt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Full fine-tuning, not LoRA, for CPT
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#catastrophic-forgetting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Catastrophic forgetting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-format-and-pitfalls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data format and pitfalls
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-b-teach-it-to-answer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part B: Teach it to answer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part B: Teach it to answer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-3-supervised-fine-tuning-sft-with-lora" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Supervised fine-tuning (SFT) with LoRA
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 3: Supervised fine-tuning (SFT) with LoRA">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-sft-is-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What SFT is for
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-objective-and-loss-masking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The objective, and loss masking
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quality-beats-quantity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quality beats quantity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decontamination-keep-the-test-out-of-training" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decontamination: keep the test out of training
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lora-training-a-small-fraction-of-the-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LoRA: training a small fraction of the parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-c-teach-it-lumoras-voice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part C: Teach it Lumora's voice
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part C: Teach it Lumora&#39;s voice">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-4-give-it-lumoras-voice-with-dpo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Give it Lumora's voice with DPO
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 4: Give it Lumora&#39;s voice with DPO">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-preferences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why preferences?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-rlhf-to-dpo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From RLHF to DPO
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-dpo-loss-unpacked" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The DPO loss, unpacked
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#building-the-preference-pairs-and-the-trap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Building the preference pairs, and the trap
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reading-the-training-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading the training logs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#over-optimisation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Over-optimisation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-d-compare-the-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part D: Compare the results
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part D: Compare the results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-5-grade-everything-with-module-2s-judge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Grade everything with Module 2's judge
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 5: Grade everything with Module 2&#39;s judge">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-hyperparameters-and-why" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The hyperparameters, and why
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#module-result" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Module result
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wrap-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wrap-up
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Wrap-up">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key takeaways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#at-production-scale-nvidia-nemo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        At production scale: NVIDIA NeMo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-pitfalls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common pitfalls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#knowledge-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Knowledge check
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#glossary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Glossary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further reading
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-optimization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. Optimising for deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-assessment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    5. Assessment - Safety alignment with DPO
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-situation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The situation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The situation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-the-model-needs-training" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why the model needs training
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#three-goals-three-techniques" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Three goals, three techniques
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The plan
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-a-teach-the-facts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part A: Teach the facts
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part A: Teach the facts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-measure-the-baseline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Measure the baseline
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-continued-pretraining-cpt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Continued pretraining (CPT)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 2: Continued pretraining (CPT)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-objective" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The objective
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#memorising-vs-knowing-why-paraphrases-matter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Memorising vs knowing: why paraphrases matter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#full-fine-tuning-not-lora-for-cpt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Full fine-tuning, not LoRA, for CPT
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#catastrophic-forgetting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Catastrophic forgetting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-format-and-pitfalls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data format and pitfalls
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-b-teach-it-to-answer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part B: Teach it to answer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part B: Teach it to answer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-3-supervised-fine-tuning-sft-with-lora" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Supervised fine-tuning (SFT) with LoRA
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 3: Supervised fine-tuning (SFT) with LoRA">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-sft-is-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What SFT is for
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-objective-and-loss-masking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The objective, and loss masking
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quality-beats-quantity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quality beats quantity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decontamination-keep-the-test-out-of-training" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decontamination: keep the test out of training
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lora-training-a-small-fraction-of-the-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LoRA: training a small fraction of the parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-c-teach-it-lumoras-voice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part C: Teach it Lumora's voice
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part C: Teach it Lumora&#39;s voice">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-4-give-it-lumoras-voice-with-dpo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Give it Lumora's voice with DPO
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 4: Give it Lumora&#39;s voice with DPO">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-preferences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why preferences?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-rlhf-to-dpo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From RLHF to DPO
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-dpo-loss-unpacked" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The DPO loss, unpacked
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#building-the-preference-pairs-and-the-trap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Building the preference pairs, and the trap
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reading-the-training-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reading the training logs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#over-optimisation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Over-optimisation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-d-compare-the-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part D: Compare the results
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part D: Compare the results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-5-grade-everything-with-module-2s-judge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Grade everything with Module 2's judge
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 5: Grade everything with Module 2&#39;s judge">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-hyperparameters-and-why" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The hyperparameters, and why
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#module-result" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Module result
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wrap-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wrap-up
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Wrap-up">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key takeaways
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#at-production-scale-nvidia-nemo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        At production scale: NVIDIA NeMo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-pitfalls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common pitfalls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#knowledge-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Knowledge check
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#glossary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Glossary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further reading
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="module-3-customising-llms-cpt-sft-dpo">Module 3: Customising LLMs (CPT, SFT, DPO)</h1>
+<p><strong>Time:</strong> about 85 minutes, reading and lab together &nbsp;|&nbsp; <strong>Track:</strong> Free (T4), with a Pro bonus</p>
+<h2 id="the-situation">The situation</h2>
+<p>Module 2 set the baseline: on the 30 held-out Lumora questions, the small base model answered
+about <strong>10%</strong> correctly, and most of that was lucky guessing. Lumora's leadership now wants an
+assistant that does three things:</p>
+<ol>
+<li><strong>Knows</strong> Lumora's products and policies (knowledge)</li>
+<li><strong>Answers questions</strong> in a short, support-style format (a skill)</li>
+<li><strong>Sounds like Lumora</strong>: warm and friendly (behaviour)</li>
+</ol>
+<p>Each goal needs a different training technique, and in this module you'll use all three on the
+data you built in Module 1. You'll train <strong>five models</strong> and grade them all with Module 2's
+calibrated judge, so you can see exactly what each technique adds.</p>
+<h3 id="why-the-model-needs-training">Why the model needs training</h3>
+<p>A language model learns one task: <strong>predict the next token</strong>. Given "The Eiffel Tower is in", it
+assigns a probability to every token, and training nudges the weights so "Paris" gets more. After
+trillions of tokens the weights hold a compressed memory of the training text, called <strong>parametric
+knowledge</strong>. Three things follow:</p>
+<ol>
+<li><strong>The model only knows what was in its training data.</strong> No model has ever seen "the Vault 10
+   has 10.2 kWh of usable capacity".</li>
+<li><strong>Not knowing doesn't stop it answering.</strong> It was trained to produce <em>plausible text</em>, not to
+   say "I don't know", so it invents a capacity or a warranty term. That's a <strong>hallucination</strong>.</li>
+<li><strong>To change what it knows, you change its weights</strong>, or you put the information in front of it
+   when the question is asked.</li>
+</ol>
+<p>Module 2 showed the second option works: with the source document in the prompt (open-book), the
+model scored near 100%. So why train at all?</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>In the prompt (RAG)</th>
+<th>In the weights (fine-tuning)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>How</strong></td>
+<td>Find relevant documents and paste them into the prompt</td>
+<td>Train the model on the information</td>
+</tr>
+<tr>
+<td><strong>Lumora result</strong></td>
+<td>Open-book: about 100% (Module 2)</td>
+<td>Closed-book: from about 10% to about 70% (this module)</td>
+</tr>
+<tr>
+<td><strong>Update a fact</strong></td>
+<td>Edit the document, instantly</td>
+<td>Retrain</td>
+</tr>
+<tr>
+<td><strong>Cost per question</strong></td>
+<td>Higher: long prompts, plus a search system to run</td>
+<td>Lower: short prompts</td>
+</tr>
+<tr>
+<td><strong>Good at</strong></td>
+<td>Fast-changing facts, citations, large document sets</td>
+<td>Stable vocabulary, style, behaviour, answer format</td>
+</tr>
+<tr>
+<td><strong>Weak at</strong></td>
+<td>Behaviour and style</td>
+<td>Fresh facts; risk of forgetting other skills</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">In practice teams combine both</p>
+<p>A common pattern: <strong>fine-tune</strong> for domain language, tone and answer format, and use <strong>RAG</strong>
+for facts that change. This module focuses on fine-tuning, and seeing how far closed-book
+knowledge can go also shows you what RAG buys you.</p>
+</div>
+<h3 id="three-goals-three-techniques">Three goals, three techniques</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Continued pretraining (CPT)</th>
+<th>Supervised fine-tuning (SFT)</th>
+<th>Direct preference optimisation (DPO)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Goal</strong></td>
+<td>Knowledge</td>
+<td>Skills, answer format</td>
+<td>Behaviour: style, tone, safety</td>
+</tr>
+<tr>
+<td><strong>Data</strong></td>
+<td>Raw domain text (manuals, policies)</td>
+<td>Prompt and ideal response</td>
+<td>Prompt, a <em>chosen</em> and a <em>rejected</em> response</td>
+</tr>
+<tr>
+<td><strong>Learns from</strong></td>
+<td>Every token</td>
+<td>Response tokens only</td>
+<td>The <em>difference</em> between chosen and rejected</td>
+</tr>
+<tr>
+<td><strong>Lab setup</strong></td>
+<td>Full fine-tuning, 6 epochs, LR 3e-5</td>
+<td>LoRA r=16, 6 epochs, LR 2e-4</td>
+<td>LoRA r=16, 3 epochs, LR 5e-5, beta 0.1</td>
+</tr>
+<tr>
+<td><strong>Typical failure</strong></td>
+<td>Forgets general skills</td>
+<td>Learns the format, invents the facts</td>
+<td>Over-optimisation: fluent but empty</td>
+</tr>
+</tbody>
+</table>
+<p>In production the usual order is <strong>CPT, then SFT, then DPO</strong>: first know, then do, then behave.</p>
+<h3 id="the-plan">The plan</h3>
+<p>You'll train five models from the same small base model (Qwen2.5-0.5B on the free track), so each
+technique's effect can be measured on its own and in combination:</p>
+<pre class="mermaid"><code>flowchart LR
+  B[Base model] --&gt;|"Step 2: CPT"| C[cpt]
+  C --&gt;|"Step 3: SFT"| CS[cpt+sft]
+  B --&gt;|"Step 3: SFT"| S[sft]
+  B --&gt;|"Step 4: DPO"| D[dpo]</code></pre>
+<p>Step 1 measures the base model, Steps 2-4 train, and Step 5 grades all five side by side.</p>
+<div class="lab-card">
+<p><strong>Open the lab now and work through it alongside this page</strong></p>
+<p><a href="https://colab.research.google.com/github/vinothss/add_llmknowledge/blob/main/notebooks/03_customization.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a></p>
+<p>The notebook uses the same step numbers as this page. Each step ends with a <strong>▶ Lab</strong> box.</p>
+<table>
+<thead>
+<tr>
+<th>Exercise</th>
+<th>Step</th>
+<th>The check confirms</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. CPT data and full fine-tuning config</td>
+<td>2</td>
+<td>end-of-text tokens, no loss masking, a learning rate suited to full fine-tuning; held-out fact perplexity drops at least 30%</td>
+</tr>
+<tr>
+<td>2. SFT data and LoRA</td>
+<td>3</td>
+<td>prompt/completion format, no contaminated pairs, LoRA on attention and MLP layers</td>
+</tr>
+<tr>
+<td>3. DPO preference data</td>
+<td>4</td>
+<td>no style instruction in the prompt, chosen more casual than rejected; reward accuracy at least 80%, style shift on unseen prompts</td>
+</tr>
+<tr>
+<td>4. Knowledge gain</td>
+<td>5</td>
+<td>CPT+SFT beats base by at least 15 points and beats SFT alone</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr />
+<h2 id="part-a-teach-the-facts">Part A: Teach the facts</h2>
+<h3 id="step-1-measure-the-baseline">Step 1: Measure the baseline</h3>
+<p>Every trained model is compared with the untouched base model on three measurements:</p>
+<ul>
+<li><strong>Answers</strong> to the 30 held-out Lumora questions, graded by the judge in Step 5</li>
+<li><strong>Perplexity</strong> on held-out Lumora fact sentences: how surprising the facts are to the model</li>
+<li><strong>MMLU</strong> on a small slice: whether training damaged general knowledge</li>
+</ul>
+<p><a href="https://en.wikipedia.org/wiki/Perplexity">Perplexity</a> is the exponential of the training loss,
+<span class="arithmatex">\(\text{PPL} = e^{\mathcal{L}}\)</span>. Roughly, it's <em>how many tokens the model is choosing between</em> at
+each step: a perplexity of 20 means it's about as unsure as picking from 20 options. The fact
+sentences are the evaluation questions with their reference answers, which are never trained on.</p>
+<div class="admonition example">
+<p class="admonition-title">▶ Lab: Step 1</p>
+<p>Run the setup and baseline cells. Note the base model's perplexity and MMLU, and read a few of
+its answers.</p>
+</div>
+<p>The base model finds Lumora's facts very surprising. The first technique changes that.</p>
+<hr />
+<h3 id="step-2-continued-pretraining-cpt">Step 2: Continued pretraining (CPT)</h3>
+<h4 id="the-objective">The objective</h4>
+<p>CPT uses exactly the objective the model was originally trained with. For a document of tokens
+<span class="arithmatex">\(x_1 \dots x_T\)</span>, the loss is the average negative log-probability of each token given everything
+before it:</p>
+<div class="arithmatex">\[\mathcal{L}_\text{CPT} = -\frac{1}{T}\sum_{t=1}^{T} \log p_\theta(x_t \mid x_1, \dots, x_{t-1})\]</div>
+<p>Every token is a training target. When the model reads "The Vault 10 weighs" and the next token is
+"98", the update makes "98" more likely in that context. Repeat across every sentence for several
+epochs and the facts become part of the model's memory. Gururangan et al. (2020) showed that
+continuing pretraining on in-domain text consistently helps.</p>
+<h4 id="memorising-vs-knowing-why-paraphrases-matter">Memorising vs knowing: why paraphrases matter</h4>
+<p>A model that has seen "The Vault 10 weighs 98 kg" fifty times can <em>recite</em> it, but may still fail
+"How heavy is the Vault 10?". Allen-Zhu &amp; Li (2023) found that models reliably answer new questions
+about a fact only when they saw it in <strong>several phrasings</strong> during training. One phrasing tends to
+be stored as a string, not as a fact.</p>
+<p>That's why the CPT corpus contains each of the 20 Lumora documents <strong>plus 2-3 paraphrases</strong> written
+by an LLM (an FAQ version, a training-note version, a plain paragraph). A paraphrase was kept only
+if every number in the original survived. Even so, a few contain small errors, such as "after
+purchase" instead of "after delivery": <strong>generated data needs the same checks as real data.</strong></p>
+<h4 id="full-fine-tuning-not-lora-for-cpt">Full fine-tuning, not LoRA, for CPT</h4>
+<p>The lab updates all of the model's roughly 494 million parameters (<strong>full fine-tuning</strong>). When this
+lab was built, LoRA-based CPT (explained in Step 3) reached about 27% on the Lumora test, while
+full CPT reached about 50%. That matches published findings: on knowledge-heavy training, LoRA
+learns substantially less than full fine-tuning (Biderman et al., 2024). It also forgets less,
+which is the other side of the same trade-off.</p>
+<details class="info">
+<summary>How it works: does full fine-tuning fit on a free T4?</summary>
+<p>Training with the Adam optimiser in fp32 needs about <strong>16 bytes per parameter</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Bytes per parameter</th>
+<th>0.5B model</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Weights (fp32)</td>
+<td>4</td>
+<td>2 GB</td>
+</tr>
+<tr>
+<td>Gradients</td>
+<td>4</td>
+<td>2 GB</td>
+</tr>
+<tr>
+<td>Adam first moment (m)</td>
+<td>4</td>
+<td>2 GB</td>
+</tr>
+<tr>
+<td>Adam second moment (v)</td>
+<td>4</td>
+<td>2 GB</td>
+</tr>
+<tr>
+<td><strong>Total, before activations</strong></td>
+<td><strong>16</strong></td>
+<td><strong>about 8 GB</strong></td>
+</tr>
+</tbody>
+</table>
+<p>A T4 has 16 GB, so a 0.5B model fits, but activations need room too: over Qwen's 151,000-token
+vocabulary, the output layer alone needs 1-2 GB per batch of 4. So on GPUs the lab uses
+<strong>8-bit Adam</strong>, which shrinks the two moment buffers from 8 to 2 bytes per parameter. A 1.5B
+model (Pro track) would need about 24 GB, so it also uses <strong>gradient checkpointing</strong>
+(recomputing activations during the backward pass instead of storing them). A 7B model would
+need about 112 GB, which is why LoRA exists.</p>
+</details>
+<h4 id="catastrophic-forgetting">Catastrophic forgetting</h4>
+<p>Every update that makes Lumora's facts more likely also moves weights that encoded other things.
+Push hard on a tiny corpus for many epochs and general ability degrades: <strong>catastrophic
+forgetting</strong>. The lab watches for it with the MMLU slice. Production recipes limit it by mixing in
+10-30% general text ("replay"), using a lower learning rate and fewer epochs, and stopping early if
+a general benchmark drops.</p>
+<h4 id="data-format-and-pitfalls">Data format and pitfalls</h4>
+<p>One document per row, with the end-of-text token appended so the model learns where documents stop:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="nt">"text"</span><span class="p">:</span><span class="w"> </span><span class="s2">"The Lumora Vault 10 is a wall-mounted home battery with 10.2 kWh of usable capacity. ... &lt;|im_end|&gt;"</span><span class="p">}</span>
+</code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">CPT pitfalls</p>
+<ul>
+<li><strong>Learning rate too high</strong> for full fine-tuning (for example 2e-4, a LoRA rate): the loss
+  spikes and general ability collapses. Use about 1e-5 to 5e-5.</li>
+<li><strong>Too few epochs on a tiny corpus:</strong> the facts never stick. The lab uses 6 epochs over 68 texts.</li>
+<li><strong>Too many epochs:</strong> the training loss approaches 0 and the model recites documents when asked
+  anything.</li>
+</ul>
+</div>
+<div class="admonition example">
+<p class="admonition-title">▶ Lab: Exercise 1, prepare the CPT data and training config</p>
+<p>Add end-of-text tokens, choose a learning rate suited to full fine-tuning, and train. The check
+requires perplexity on the held-out facts to drop by at least 30%.</p>
+</div>
+<p>After CPT the model <em>knows</em> more, but it was trained to continue documents. Ask it a question and
+it may carry on writing a manual page. That's the next problem.</p>
+<hr />
+<h2 id="part-b-teach-it-to-answer">Part B: Teach it to answer</h2>
+<h3 id="step-3-supervised-fine-tuning-sft-with-lora">Step 3: Supervised fine-tuning (SFT) with LoRA</h3>
+<h4 id="what-sft-is-for">What SFT is for</h4>
+<p>SFT shows the model many examples of <strong>input and desired output</strong>, so it learns a <em>behaviour</em>:
+here, answering a support question in one short, accurate sentence. The training data is the Q&amp;A
+set from Module 1.</p>
+<h4 id="the-objective-and-loss-masking">The objective, and loss masking</h4>
+<p>The loss has the same form as CPT, but only the <strong>response tokens</strong> count:</p>
+<div class="arithmatex">\[\mathcal{L}_\text{SFT} = -\frac{1}{|R|}\sum_{t \in R} \log p_\theta(x_t \mid x_{&lt;t})\]</div>
+<p>where <span class="arithmatex">\(R\)</span> is the set of positions in the assistant's reply. The prompt is still read as context,
+but its tokens are <strong>masked</strong> (their labels set to -100) so they contribute nothing to the update:</p>
+<table>
+<thead>
+<tr>
+<th>Tokens</th>
+<th><code>&lt;system&gt;</code> You are Lumora's support assistant...</th>
+<th><code>&lt;user&gt;</code> How long is the Vault warranty?</th>
+<th><code>&lt;assistant&gt;</code> 12 years. <code>&lt;end&gt;</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>In the loss?</strong></td>
+<td>no (masked)</td>
+<td>no (masked)</td>
+<td><strong>yes</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Without masking, part of the training effort goes into learning to <em>write questions and system
+prompts</em>. In TRL you get masking by giving the data in <strong>prompt/completion</strong> format:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"prompt"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">"role"</span><span class="p">:</span><span class="w"> </span><span class="s2">"system"</span><span class="p">,</span><span class="w"> </span><span class="nt">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"You are Lumora Energy's support assistant. Answer in one short sentence."</span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">"role"</span><span class="p">:</span><span class="w"> </span><span class="s2">"user"</span><span class="p">,</span><span class="w"> </span><span class="nt">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"What does error code E-317 indicate?"</span><span class="p">}</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">"completion"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="nt">"role"</span><span class="p">:</span><span class="w"> </span><span class="s2">"assistant"</span><span class="p">,</span><span class="w"> </span><span class="nt">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"The Bridge has lost its internet connection for more than 72 hours."</span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<details class="info">
+<summary>What is a chat template?</summary>
+<p>Instruct models are trained with special tokens that mark who is speaking. Qwen2.5, for
+example, wraps each turn in <code>&lt;|im_start|&gt;role ... &lt;|im_end|&gt;</code>. The <strong>chat template</strong> (stored
+with the tokenizer) turns a list of messages into that exact string. Always use the model's own
+template, in training and at inference: a mismatch is one of the most common reasons a
+fine-tuned model behaves strangely. Read more in the
+<a href="https://huggingface.co/docs/transformers/chat_templating">Hugging Face chat templates guide</a>.</p>
+</details>
+<h4 id="quality-beats-quantity">Quality beats quantity</h4>
+<p>The LIMA study (Zhou et al., 2023) fine-tuned a 65B model on just <strong>1,000 carefully chosen
+examples</strong> and got a strong assistant: evidence that SFT mainly teaches <em>format and behaviour</em>,
+not new knowledge. You'll see the same in Step 5.</p>
+<h4 id="decontamination-keep-the-test-out-of-training">Decontamination: keep the test out of training</h4>
+<p>The Q&amp;A pairs were generated from the same 20 documents the test questions were written from, so
+some are near-copies of test questions:</p>
+<table>
+<thead>
+<tr>
+<th>Training question (generated)</th>
+<th>Test question (held out)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"What is the usable capacity of the Lumora Vault 10?"</td>
+<td>"What is the usable capacity of the Lumora Vault 10?"</td>
+</tr>
+<tr>
+<td>"How many Vault 15 units can be connected to a single Bridge inverter?"</td>
+<td>"What is the maximum number of Vault 15 units on a single Bridge inverter?"</td>
+</tr>
+</tbody>
+</table>
+<p>Training on these would inflate the score without teaching anything, like giving students the
+exam to study. The lab compares <strong>content words</strong> (what's left after removing "the", "what", "is"
+and so on) using <strong><a href="https://en.wikipedia.org/wiki/Jaccard_index">Jaccard similarity</a></strong>, the same
+measure Module 1 used for deduplication:</p>
+<div class="arithmatex">\[J(A, B) = \frac{|A \cap B|}{|A \cup B|}\]</div>
+<p>Any training question with <span class="arithmatex">\(J \ge 0.6\)</span> against a test question is dropped; with the shipped data
+that removes 13 of 101 pairs. At internet scale the same problem is called <strong>benchmark
+contamination</strong>.</p>
+<h4 id="lora-training-a-small-fraction-of-the-parameters">LoRA: training a small fraction of the parameters</h4>
+<p>SFT here uses <strong>LoRA</strong> rather than full fine-tuning. Full fine-tuning updates every weight matrix
+<span class="arithmatex">\(W\)</span>. Hu et al. (2021) observed that the <em>change</em> needed during fine-tuning, <span class="arithmatex">\(\Delta W\)</span>, can usually
+be approximated by the product of two thin matrices. LoRA freezes <span class="arithmatex">\(W\)</span> and learns only those:</p>
+<div class="arithmatex">\[W' = W + \frac{\alpha}{r} B A, \qquad B \in \mathbb{R}^{d \times r},\; A \in \mathbb{R}^{r \times k},\; r \ll \min(d, k)\]</div>
+<ul>
+<li><span class="arithmatex">\(r\)</span>, the <strong>rank</strong>, controls capacity. The lab uses 16.</li>
+<li><span class="arithmatex">\(\alpha\)</span> is a scaling factor; the lab uses <span class="arithmatex">\(\alpha = 2r = 32\)</span>, a common default.</li>
+<li><span class="arithmatex">\(B\)</span> starts at zero, so before training the model is exactly the original.</li>
+<li>After training, <span class="arithmatex">\(BA\)</span> can be <strong>merged</strong> into <span class="arithmatex">\(W\)</span>, so there's no extra cost at inference.</li>
+</ul>
+<details class="info">
+<summary>How it works: how big is a LoRA adapter?</summary>
+<p>For a matrix of shape <span class="arithmatex">\(d \times k\)</span>, the adapter adds <span class="arithmatex">\(r(d + k)\)</span> parameters. For Qwen2.5-0.5B
+(hidden size 896, MLP size 4864, 24 layers) with <span class="arithmatex">\(r = 16\)</span> on all seven projection matrices:</p>
+<table>
+<thead>
+<tr>
+<th>Matrix</th>
+<th>Shape</th>
+<th>LoRA params, r(d+k)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>q_proj, o_proj</td>
+<td>896 x 896</td>
+<td>28,672 each</td>
+</tr>
+<tr>
+<td>k_proj, v_proj</td>
+<td>896 x 128</td>
+<td>16,384 each</td>
+</tr>
+<tr>
+<td>gate_proj, up_proj</td>
+<td>896 x 4864</td>
+<td>92,160 each</td>
+</tr>
+<tr>
+<td>down_proj</td>
+<td>4864 x 896</td>
+<td>92,160</td>
+</tr>
+<tr>
+<td><strong>Per layer</strong></td>
+<td></td>
+<td><strong>366,592</strong></td>
+</tr>
+<tr>
+<td><strong>24 layers</strong></td>
+<td></td>
+<td><strong>about 8.8M, under 2% of 494M</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The optimiser only tracks those 8.8M parameters, so training needs a fraction of the memory.
+<strong>QLoRA</strong> (Dettmers et al., 2023) also stores the frozen model in 4-bit, which is how people
+fine-tune 7-8B models on one consumer GPU.</p>
+</details>
+<p>Transformer blocks have <strong>attention</strong> projections (q, k, v, o) and <strong>MLP</strong> projections (gate, up,
+down). Facts seem to be stored largely in the MLP layers, and adapting only q and v, as the
+original LoRA paper did, is noticeably weaker. The lab adapts <strong>all seven</strong>, the modern default.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>LoRA</th>
+<th>Full fine-tuning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Trainable parameters</td>
+<td>about 1-2%</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>Memory</td>
+<td>Low</td>
+<td>About 16 bytes per parameter</td>
+</tr>
+<tr>
+<td>Learns new <strong>facts</strong></td>
+<td>Weakly</td>
+<td>Well</td>
+</tr>
+<tr>
+<td>Learns <strong>format and style</strong></td>
+<td>Well</td>
+<td>Well</td>
+</tr>
+<tr>
+<td>Forgets general skills</td>
+<td>Less</td>
+<td>More</td>
+</tr>
+<tr>
+<td>Storage</td>
+<td>A few MB per adapter</td>
+<td>A full copy per variant</td>
+</tr>
+<tr>
+<td><strong>Lab use</strong></td>
+<td>SFT, DPO</td>
+<td>CPT</td>
+</tr>
+</tbody>
+</table>
+<p>Rule of thumb: <strong>LoRA when you're changing <em>how</em> the model behaves; full fine-tuning when you're
+changing <em>what</em> it knows.</strong></p>
+<div class="admonition example">
+<p class="admonition-title">▶ Lab: Exercise 2, prepare the SFT data and LoRA config</p>
+<p>Convert the Q&amp;A pairs to prompt/completion format, drop contaminated pairs, and target LoRA at
+all seven projections. Then train two models: SFT on the base model, and SFT on the CPT model.</p>
+</div>
+<p>The model now knows Lumora's facts and answers like support staff. The last goal is how it sounds.</p>
+<hr />
+<h2 id="part-c-teach-it-lumoras-voice">Part C: Teach it Lumora's voice</h2>
+<h3 id="step-4-give-it-lumoras-voice-with-dpo">Step 4: Give it Lumora's voice with DPO</h3>
+<h4 id="why-preferences">Why preferences?</h4>
+<p>Some goals have no single correct answer. What's the <em>ideal</em> friendly reply to "My package hasn't
+arrived"? There are thousands. But people find it easy to compare two replies and say which is
+better. <strong>Preference data</strong> captures that: for each prompt, a <strong>chosen</strong> reply and a <strong>rejected</strong>
+one.</p>
+<h4 id="from-rlhf-to-dpo">From RLHF to DPO</h4>
+<p>The classic recipe, <strong><a href="https://en.wikipedia.org/wiki/Reinforcement_learning_from_human_feedback">RLHF</a></strong>
+(used for InstructGPT, Ouyang et al., 2022), has three stages: collect preference pairs, train a
+separate <strong>reward model</strong> to score replies as people would, then optimise the LLM with
+reinforcement learning to maximise that reward without drifting too far from the original. It works,
+but it means training several models and is notoriously finicky. <strong>DPO</strong> (Rafailov et al., 2023)
+showed the same goal can be reached <strong>directly</strong> from the preference pairs with a simple
+classification-style loss: no reward model and no reinforcement learning.</p>
+<h4 id="the-dpo-loss-unpacked">The DPO loss, unpacked</h4>
+<p>For a prompt <span class="arithmatex">\(x\)</span> with chosen reply <span class="arithmatex">\(y_w\)</span> and rejected reply <span class="arithmatex">\(y_l\)</span>:</p>
+<div class="arithmatex">\[\mathcal{L}_\text{DPO} = -\log \sigma\Big(\beta\big[\underbrace{\log\tfrac{\pi_\theta(y_w|x)}{\pi_\text{ref}(y_w|x)}}_{\text{chosen: how much more likely than before}} - \underbrace{\log\tfrac{\pi_\theta(y_l|x)}{\pi_\text{ref}(y_l|x)}}_{\text{rejected: how much more likely than before}}\big]\Big)\]</div>
+<p>In words:</p>
+<ul>
+<li><span class="arithmatex">\(\pi_\theta\)</span> is the model being trained; <span class="arithmatex">\(\pi_\text{ref}\)</span> is a <strong>frozen copy</strong> of where it started.</li>
+<li>Each log-ratio measures how much the model has changed its opinion of a reply since training began.</li>
+<li>The loss is low when the model has raised the chosen reply <strong>more</strong> than the rejected one.</li>
+<li><span class="arithmatex">\(\sigma\)</span> is the sigmoid, so the loss works like logistic regression on "is chosen preferred?"</li>
+<li><span class="arithmatex">\(\beta\)</span> sets how far the model is <strong>allowed to drift</strong> from the reference. A small <span class="arithmatex">\(\beta\)</span> (0.05)
+  allows big changes; a large one (0.5) keeps it close. 0.1 is a common default.</li>
+</ul>
+<p>With LoRA you don't need a second model in memory: the reference is the same network with the
+adapter switched off.</p>
+<h4 id="building-the-preference-pairs-and-the-trap">Building the preference pairs, and the trap</h4>
+<p>The lab asks the 1.5B model to answer each everyday prompt twice: once told to be "warm, casual,
+use contractions" (<strong>chosen</strong>) and once told to be "formal, impersonal, no contractions"
+(<strong>rejected</strong>).</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"prompt"</span><span class="p">:</span><span class="w">   </span><span class="p">[{</span><span class="nt">"role"</span><span class="p">:</span><span class="w"> </span><span class="s2">"user"</span><span class="p">,</span><span class="w"> </span><span class="nt">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"How do I reset my password?"</span><span class="p">}],</span>
+<span class="w">  </span><span class="nt">"chosen"</span><span class="p">:</span><span class="w">   </span><span class="p">[{</span><span class="nt">"role"</span><span class="p">:</span><span class="w"> </span><span class="s2">"assistant"</span><span class="p">,</span><span class="w"> </span><span class="nt">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Hey there! Just hit the \"Forgot Password\" link and follow the steps. If that doesn't work, support's happy to help!"</span><span class="p">}],</span>
+<span class="w">  </span><span class="nt">"rejected"</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span><span class="nt">"role"</span><span class="p">:</span><span class="w"> </span><span class="s2">"assistant"</span><span class="p">,</span><span class="w"> </span><span class="nt">"content"</span><span class="p">:</span><span class="w"> </span><span class="s2">"To reset your password, please navigate to the login page and select the \"Forgot Password\" option. Further assistance is available from customer support."</span><span class="p">}]</span>
+<span class="p">}</span>
+</code></pre></div>
+<div class="admonition danger">
+<p class="admonition-title">Don't leak the style instruction</p>
+<p>The instruction used to <em>generate</em> the chosen reply ("reply casually...") must <strong>not</strong> be in
+the training prompt. If it is, the model learns "when told to be casual, be casual", which it
+could already do. At inference nobody adds that instruction, so the style never appears. The
+lab's starter code makes exactly this mistake on purpose, and the check catches it.</p>
+</div>
+<h4 id="reading-the-training-logs">Reading the training logs</h4>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Meaning</th>
+<th>Healthy pattern</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>rewards/chosen</code></td>
+<td><span class="arithmatex">\(\beta \times\)</span> log-ratio for chosen replies</td>
+<td>Stays near 0 or rises</td>
+</tr>
+<tr>
+<td><code>rewards/rejected</code></td>
+<td>The same for rejected replies</td>
+<td>Falls (becomes negative)</td>
+</tr>
+<tr>
+<td><code>rewards/margins</code></td>
+<td>chosen minus rejected</td>
+<td>Grows steadily</td>
+</tr>
+<tr>
+<td><code>rewards/accuracies</code></td>
+<td>Share of pairs where chosen beats rejected</td>
+<td>Rises towards 0.8-1.0</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Chosen rewards can go <em>down</em> too</p>
+<p>It's common for both rewards to fall, with rejected falling much faster. The margin grows, so
+the loss looks fine, but the model has made the chosen replies <em>less</em> likely in absolute terms.
+This "likelihood displacement" is a known DPO quirk, and one reason to always read actual
+replies, not just metrics.</p>
+</div>
+<h4 id="over-optimisation">Over-optimisation</h4>
+<p>Push too hard and DPO games its own signal. At a 4x higher learning rate (2e-4) the lab's model
+reached even better reward metrics, and its replies collapsed into empty cheerfulness:</p>
+<blockquote>
+<p>"Hey there! Here's some fun ideas!"</p>
+</blockquote>
+<p>It found that exclamation marks and contractions were what separated chosen from rejected, and
+maximised <em>those</em> at the expense of helpfulness. <strong>Any proxy metric can be gamed.</strong> Defences: a
+sensible <span class="arithmatex">\(\beta\)</span> and learning rate, fewer epochs, and evaluating helpfulness alongside style. You'll
+meet this again in Module 5.</p>
+<details class="info">
+<summary>Beyond DPO: the alignment family</summary>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Idea</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>RLHF / PPO</strong></td>
+<td>Reward model plus reinforcement learning. Most flexible, most complex</td>
+</tr>
+<tr>
+<td><strong>DPO</strong></td>
+<td>Direct optimisation on preference pairs (this lab)</td>
+</tr>
+<tr>
+<td><strong>IPO</strong></td>
+<td>Adds regularisation against overfitting to preferences</td>
+</tr>
+<tr>
+<td><strong>KTO</strong></td>
+<td>Needs only a "good" or "bad" label per reply, not pairs</td>
+</tr>
+<tr>
+<td><strong>ORPO</strong></td>
+<td>Combines SFT and preference optimisation in one stage, no reference model</td>
+</tr>
+<tr>
+<td><strong>SimPO</strong></td>
+<td>Reference-free, length-normalised reward</td>
+</tr>
+</tbody>
+</table>
+<p>NeMo-RL and TRL implement several of these. The data and evaluation discipline is the same.</p>
+</details>
+<div class="admonition example">
+<p class="admonition-title">▶ Lab: Exercise 3, build the preference pairs</p>
+<p>Write <code>to_preference</code> without leaking the style instruction, train with DPO, and watch the
+reward metrics. The check requires reward accuracy of at least 80% and a style shift on prompts
+the model never saw. Optionally, re-run with learning rate 2e-4 and read what happens.</p>
+</div>
+<p>You now have five models. Time to find out what each technique really did.</p>
+<hr />
+<h2 id="part-d-compare-the-results">Part D: Compare the results</h2>
+<h3 id="step-5-grade-everything-with-module-2s-judge">Step 5: Grade everything with Module 2's judge</h3>
+<p>The notebook recalibrates Module 2's judge (same method, same data) and grades all five models'
+answers. Results from our reference run (yours will vary by a few points):</p>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Lumora accuracy</th>
+<th>Fact perplexity</th>
+<th>MMLU</th>
+<th>What happened</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>base</td>
+<td>10%</td>
+<td>86</td>
+<td>68%</td>
+<td>Doesn't know Lumora</td>
+</tr>
+<tr>
+<td>sft</td>
+<td>20%</td>
+<td>50</td>
+<td>70%</td>
+<td>Perfect one-sentence format, <strong>invented facts</strong></td>
+</tr>
+<tr>
+<td>cpt</td>
+<td>50%</td>
+<td>15</td>
+<td>70%</td>
+<td>Knows the facts, but answers can ramble</td>
+</tr>
+<tr>
+<td><strong>cpt+sft</strong></td>
+<td><strong>70%</strong></td>
+<td><strong>11</strong></td>
+<td>70%</td>
+<td>Knowledge <strong>plus</strong> the answer format</td>
+</tr>
+<tr>
+<td>dpo</td>
+<td>3%</td>
+<td>86</td>
+<td>68%</td>
+<td>Casual tone, no Lumora knowledge: it chats instead of stating facts</td>
+</tr>
+</tbody>
+</table>
+<p>Three lessons:</p>
+<ol>
+<li><strong>SFT alone doesn't add knowledge.</strong> About 90 Q&amp;A pairs can't teach 20 documents' worth of
+   facts. SFT teaches <em>how</em> to answer, and the model fills that shape with whatever it knows. With
+   CPT first, it knows the right things.</li>
+<li><strong>Perplexity on held-out facts fell from 86 to 11</strong>, even though the model never saw those
+   exact sentences: the knowledge generalised.</li>
+<li><strong>MMLU didn't move</strong> on the 50-question slice, so there's no measurable forgetting at this
+   scale. Longer training or a bigger corpus can cost general knowledge, so always check.</li>
+</ol>
+<p>The DPO model also shows why techniques stack: it learned the voice (its casualness score on unseen
+prompts rose from 0.17 to 0.77) but, trained on the base model, it knows nothing about Lumora.</p>
+<div class="admonition example">
+<p class="admonition-title">▶ Lab: Exercise 4, grade the five models</p>
+<p>Grade every model with the recalibrated judge and compare with the table above. The check
+requires CPT+SFT to beat the base model by at least 15 points and to beat SFT alone.</p>
+</div>
+<h4 id="the-hyperparameters-and-why">The hyperparameters, and why</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>CPT</th>
+<th>SFT</th>
+<th>DPO</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Method</td>
+<td>Full fine-tuning</td>
+<td>LoRA r=16, alpha=32</td>
+<td>LoRA r=16, alpha=32</td>
+</tr>
+<tr>
+<td>Learning rate</td>
+<td>3e-5</td>
+<td>2e-4</td>
+<td>5e-5</td>
+</tr>
+<tr>
+<td>Epochs</td>
+<td>6</td>
+<td>6</td>
+<td>3</td>
+</tr>
+<tr>
+<td>Batch size</td>
+<td>8</td>
+<td>8</td>
+<td>4 x 2 accumulation</td>
+</tr>
+<tr>
+<td>Schedule</td>
+<td>Cosine, 2 warm-up steps</td>
+<td>Cosine</td>
+<td>Cosine</td>
+</tr>
+<tr>
+<td>Why</td>
+<td>A small learning rate protects general ability; several epochs because the corpus is tiny</td>
+<td>LoRA tolerates a higher rate; repeated passes fix the format</td>
+<td>A gentle rate avoids over-optimisation; beta 0.1 is the standard anchor</td>
+</tr>
+</tbody>
+</table>
+<p>Learning rates differ by about 10x between full fine-tuning and LoRA because LoRA's update starts at
+zero and is scaled by <span class="arithmatex">\(\alpha / r\)</span>. Copying a LoRA learning rate into a full fine-tune is one of the
+most common ways to wreck a model.</p>
+<h3 id="module-result">Module result</h3>
+<p>The notebook logs every model to MLflow and saves <code>results.json</code>. You now have an assistant that
+knows Lumora and answers like support. Module 4 asks the next question: how to make a model like
+this small and fast enough to deploy.</p>
+<div class="lab-complete" data-id="m03"></div>
+
+<hr />
+<h2 id="wrap-up">Wrap-up</h2>
+<h3 id="key-takeaways">Key takeaways</h3>
+<ul>
+<li><strong>CPT adds knowledge, SFT adds skills, DPO shapes behaviour.</strong> Use the right tool for the goal,
+  and stack them: CPT, then SFT, then DPO.</li>
+<li><strong>LoRA changes behaviour cheaply; full fine-tuning changes knowledge.</strong></li>
+<li><strong>Keep the test out of training,</strong> or your scores mean nothing.</li>
+<li><strong>Read the outputs, not just the metrics.</strong> Over-optimised DPO and likelihood displacement both
+  look fine on the reward curves.</li>
+<li><strong>Check general ability after every stage.</strong></li>
+</ul>
+<h3 id="at-production-scale-nvidia-nemo">At production scale: NVIDIA NeMo</h3>
+<table>
+<thead>
+<tr>
+<th>Lab (TRL + PEFT)</th>
+<th>NeMo Framework / NeMo-RL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SFTTrainer</code> on plain text (CPT)</td>
+<td>NeMo 2.0 pretraining recipe resumed from a checkpoint</td>
+</tr>
+<tr>
+<td><code>SFTTrainer</code> prompt/completion + LoRA</td>
+<td>NeMo <code>finetune</code> recipe with <code>peft="lora"</code></td>
+</tr>
+<tr>
+<td><code>DPOTrainer</code> (<code>beta</code>, reference model)</td>
+<td>NeMo-RL DPO with a reference-policy penalty</td>
+</tr>
+<tr>
+<td><code>merge_and_unload()</code></td>
+<td>NeMo LoRA merge, then export for deployment</td>
+</tr>
+</tbody>
+</table>
+<p>The concepts, data formats and failure modes are the same. NeMo adds multi-GPU and multi-node
+training for models far larger than a T4 can hold.</p>
+<h3 id="common-pitfalls">Common pitfalls</h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Test questions, or near-copies, in the training data: <strong>decontaminate</strong></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Different chat templates in training and inference: <strong>always use the tokenizer's template</strong></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> SFT loss computed on prompts: <strong>use prompt/completion format</strong></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> A LoRA learning rate used for full fine-tuning: <strong>drop it about 10x</strong></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Style instruction left in DPO prompts: <strong>remove it</strong></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Only metrics checked, no replies read: <strong>always read generations</strong></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> General ability not re-checked: <strong>run MMLU, or similar, after every stage</strong></li>
+</ul>
+<h3 id="knowledge-check">Knowledge check</h3>
+<script type="application/json" class="quiz" data-id="m03">
+[
+  {"q": "Your product specs change every month. What's the best way to keep an assistant accurate on them?",
+   "options": ["Continued pretraining every month", "Retrieval (RAG) for the specs, with fine-tuning for tone and format", "DPO on the new specs", "A bigger base model"],
+   "answer": 1, "why": "Fast-changing facts belong in retrieval; fine-tuning is best for stable knowledge, format and behaviour."},
+  {"q": "After SFT alone, the model answers in the perfect support format but gets most facts wrong. Why?",
+   "options": ["The learning rate was too low", "SFT teaches format and skills; without the knowledge, the model fills the format with invented facts", "LoRA cannot be used for SFT", "The judge is broken"],
+   "answer": 1, "why": "In the lab, SFT alone reached about 20% against about 70% for CPT followed by SFT."},
+  {"q": "Why does the lab use full fine-tuning rather than LoRA for continued pretraining?",
+   "options": ["LoRA can't train on plain text", "Low-rank updates absorb new facts poorly; full fine-tuning reached about 50% vs about 27% for LoRA", "Full fine-tuning uses less memory", "TRL requires it"],
+   "answer": 1, "why": "LoRA learns less (and forgets less). Adding knowledge needs more capacity."},
+  {"q": "How many trainable parameters does a rank-16 LoRA add to one 896 x 4864 matrix?",
+   "options": ["16", "about 92,000", "about 4.4 million", "896 x 4864"],
+   "answer": 1, "why": "r(d+k) = 16 x (896 + 4864) = 92,160."},
+  {"q": "Why use the prompt/completion format for SFT?",
+   "options": ["It makes training faster", "Loss is computed only on the answer, so the model learns to answer rather than to write questions", "TRL requires it for LoRA", "It removes the need for a chat template"],
+   "answer": 1, "why": "Masking the prompt focuses all learning on the response."},
+  {"q": "A DPO training prompt reads: 'Reply casually. How do I reset my password?' What's wrong?",
+   "options": ["Nothing", "The style instruction leaks into the prompt, so the model learns to obey it rather than adopt the style unprompted", "Prompts must be in the system role", "DPO prompts cannot be questions"],
+   "answer": 1, "why": "At inference nobody adds 'reply casually', so the style must be learned from the preference signal alone."},
+  {"q": "In DPO, what does increasing beta from 0.1 to 0.5 do?",
+   "options": ["Lets the model drift further from the reference", "Keeps the model closer to the reference model", "Doubles the learning rate", "Removes the need for rejected replies"],
+   "answer": 1, "why": "beta anchors the model: a larger beta pulls it more strongly towards the reference."},
+  {"q": "DPO reward accuracy hits 100% but replies become 'Hey there! Here's some fun ideas!' What happened?",
+   "options": ["Catastrophic forgetting of style", "Over-optimisation: the model maximised surface style signals and dropped helpfulness", "A tokenizer bug", "The reference model was too strong"],
+   "answer": 1, "why": "Metrics can be gamed. Read generations and tune beta and the learning rate."}
+]
+</script>
+
+<h3 id="glossary">Glossary</h3>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Parametric knowledge</strong></td>
+<td>Information stored in the model's weights</td>
+</tr>
+<tr>
+<td><a href="https://en.wikipedia.org/wiki/Perplexity"><strong>Perplexity</strong></a></td>
+<td><span class="arithmatex">\(e^{\text{loss}}\)</span>; roughly how many tokens the model is choosing between</td>
+</tr>
+<tr>
+<td><strong>Epoch</strong></td>
+<td>One full pass over the training data</td>
+</tr>
+<tr>
+<td><strong>Loss masking</strong></td>
+<td>Excluding tokens, such as the prompt, from the loss by setting their label to -100</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/docs/transformers/chat_templating"><strong>Chat template</strong></a></td>
+<td>The recipe that turns a list of messages into the special-token string a model expects</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/docs/peft/main/en/conceptual_guides/lora"><strong>LoRA rank (r)</strong></a></td>
+<td>The width of the low-rank update; higher means more capacity</td>
+</tr>
+<tr>
+<td><strong>Merge</strong></td>
+<td>Folding a LoRA update into the base weights for deployment</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/docs/trl/dpo_trainer"><strong>Reference model</strong></a></td>
+<td>The frozen starting copy that DPO measures change against</td>
+</tr>
+<tr>
+<td><a href="https://huggingface.co/docs/trl/dpo_trainer"><strong>beta</strong></a></td>
+<td>How far DPO lets the model drift from the reference</td>
+</tr>
+<tr>
+<td><a href="https://en.wikipedia.org/wiki/Catastrophic_interference"><strong>Catastrophic forgetting</strong></a></td>
+<td>Loss of general ability after narrow fine-tuning</td>
+</tr>
+<tr>
+<td><strong>Contamination</strong></td>
+<td>Test items, or near-copies, present in training data</td>
+</tr>
+</tbody>
+</table>
+<h3 id="further-reading">Further reading</h3>
+<p><strong>Papers</strong></p>
+<ul>
+<li>Hu et al. (2021), <a href="https://arxiv.org/abs/2106.09685"><em>LoRA: Low-Rank Adaptation of Large Language Models</em></a></li>
+<li>Gururangan et al. (2020), <a href="https://arxiv.org/abs/2004.10964"><em>Don't Stop Pretraining: Adapt Language Models to Domains and Tasks</em></a></li>
+<li>Allen-Zhu &amp; Li (2023), <a href="https://arxiv.org/abs/2309.14316"><em>Physics of Language Models: Part 3.1, Knowledge Storage and Extraction</em></a></li>
+<li>Zhou et al. (2023), <a href="https://arxiv.org/abs/2305.11206"><em>LIMA: Less Is More for Alignment</em></a></li>
+<li>Ouyang et al. (2022), <a href="https://arxiv.org/abs/2203.02155"><em>Training language models to follow instructions with human feedback</em></a></li>
+<li>Rafailov et al. (2023), <a href="https://arxiv.org/abs/2305.18290"><em>Direct Preference Optimization: Your Language Model is Secretly a Reward Model</em></a></li>
+<li>Dettmers et al. (2023), <a href="https://arxiv.org/abs/2305.14314"><em>QLoRA: Efficient Finetuning of Quantized LLMs</em></a></li>
+<li>Biderman et al. (2024), <a href="https://arxiv.org/abs/2405.09673"><em>LoRA Learns Less and Forgets Less</em></a></li>
+</ul>
+<p><strong>Concepts and tools</strong></p>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Retrieval-augmented_generation">Retrieval-augmented generation (Wikipedia)</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Hallucination_(artificial_intelligence)">Hallucination in AI (Wikipedia)</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Cross-entropy">Cross-entropy (Wikipedia)</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Perplexity">Perplexity (Wikipedia)</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Low-rank_approximation">Low-rank approximation (Wikipedia)</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Catastrophic_interference">Catastrophic interference / forgetting (Wikipedia)</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Reinforcement_learning_from_human_feedback">Reinforcement learning from human feedback (Wikipedia)</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Sigmoid_function">Sigmoid function (Wikipedia)</a></li>
+<li><a href="https://arxiv.org/abs/1412.6980">Kingma &amp; Ba (2014), <em>Adam: A Method for Stochastic Optimization</em></a></li>
+<li><a href="https://huggingface.co/docs/transformers/chat_templating">Hugging Face: chat templates</a></li>
+<li><a href="https://huggingface.co/docs/peft/main/en/conceptual_guides/lora">Hugging Face PEFT: LoRA conceptual guide</a></li>
+<li><a href="https://huggingface.co/docs/trl/sft_trainer">TRL: SFTTrainer documentation</a></li>
+<li><a href="https://huggingface.co/docs/trl/dpo_trainer">TRL: DPOTrainer documentation</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../02-evaluation/" class="md-footer__link md-footer__link--prev" aria-label="Previous: 2. Evaluating LLMs">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                2. Evaluating LLMs
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../04-optimization/" class="md-footer__link md-footer__link--next" aria-label="Next: 4. Optimising for deployment">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                4. Optimising for deployment
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.footer", "navigation.top", "content.code.copy", "search.highlight"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.a5f9d56c.min.js"></script>
+      
+        <script src="../../javascripts/portal.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
