@@ -1,131 +1,155 @@
 # Module 3: Customising LLMs (CPT, SFT, DPO)
 
-**Time:** about 40 min reading + 45 min lab &nbsp;|&nbsp; **Track:** Free (T4), with a Pro bonus
+**Time:** about 85 minutes, reading and lab together &nbsp;|&nbsp; **Track:** Free (T4), with a Pro bonus
 
-## Learning objectives
+## The situation
 
-By the end of this module you should be able to:
+Module 2 set the baseline: on the 30 held-out Lumora questions, the small base model answered
+about **10%** correctly, and most of that was lucky guessing. Lumora's leadership now wants an
+assistant that does three things:
 
-- [ ] Explain where an LLM's knowledge lives and why prompting alone can't always add it
-- [ ] Decide between RAG, CPT, SFT and DPO for a given business goal
-- [ ] Describe the training objective of each technique and what it changes inside the model
-- [ ] Explain how LoRA works, calculate its size, and say when full fine-tuning is the better choice
-- [ ] Prepare data in the correct format for each technique, including loss masking and decontamination
-- [ ] Read training logs (loss, perplexity, DPO reward metrics) and spot the common failure modes
+1. **Knows** Lumora's products and policies (knowledge)
+2. **Answers questions** in a short, support-style format (a skill)
+3. **Sounds like Lumora**: warm and friendly (behaviour)
 
----
+Each goal needs a different training technique, and in this module you'll use all three on the
+data you built in Module 1. You'll train **five models** and grade them all with Module 2's
+calibrated judge, so you can see exactly what each technique adds.
 
-## 1. Where does a model's knowledge live?
+### Why the model needs training
 
-A language model is trained on one task: **predict the next token**. Given "The Eiffel Tower is
-in", it assigns a probability to every token in its vocabulary, and training nudges the weights so
-"Paris" gets more probability. After trillions of tokens, the weights hold a compressed statistical
-memory of the training text. This is called **parametric knowledge**: it's stored in the
-parameters, not in a database you can look things up in.
+A language model learns one task: **predict the next token**. Given "The Eiffel Tower is in", it
+assigns a probability to every token, and training nudges the weights so "Paris" gets more. After
+trillions of tokens the weights hold a compressed memory of the training text, called **parametric
+knowledge**. Three things follow:
 
-Three consequences shape everything in this module:
+1. **The model only knows what was in its training data.** No model has ever seen "the Vault 10
+   has 10.2 kWh of usable capacity".
+2. **Not knowing doesn't stop it answering.** It was trained to produce *plausible text*, not to
+   say "I don't know", so it invents a capacity or a warranty term. That's a **hallucination**.
+3. **To change what it knows, you change its weights**, or you put the information in front of it
+   when the question is asked.
 
-1. **The model only knows what was in its training data.** Lumora Energy is fictional, so no
-   model has ever seen "the Vault 10 has 10.2 kWh of usable capacity". In Module 2 the base model
-   scored about 10% on Lumora questions, and most of that was lucky guessing.
-2. **Not knowing doesn't stop the model from answering.** It was trained to produce *plausible
-   text*, not to say "I don't know". So it confidently invents a capacity, a warranty term or an
-   error-code meaning. That's a **hallucination**.
-3. **Changing what the model knows means changing its weights**, or putting the information in
-   front of it at question time.
+Module 2 showed the second option works: with the source document in the prompt (open-book), the
+model scored near 100%. So why train at all?
 
-### Two ways to give a model new knowledge
-
-| | In-context (RAG, long prompts) | In the weights (fine-tuning) |
+| | In the prompt (RAG) | In the weights (fine-tuning) |
 |---|---|---|
-| **How** | Retrieve relevant documents and paste them into the prompt | Train the model on the new information |
-| **Module 2 result** | Open-book scored about 100% | This module: closed-book rises from about 10% to about 70% |
+| **How** | Find relevant documents and paste them into the prompt | Train the model on the information |
+| **Lumora result** | Open-book: about 100% (Module 2) | Closed-book: from about 10% to about 70% (this module) |
 | **Update a fact** | Edit the document, instantly | Retrain |
-| **Cost per question** | Higher: long prompts, plus a retrieval system to run | Lower: short prompts |
-| **Good at** | Fast-changing facts, citations, large document sets | Stable domain vocabulary, style, behaviour, response format, latency-critical apps |
-| **Weak at** | Behaviour and style; needs retrieval to work well | Fresh facts; risk of forgetting other skills |
+| **Cost per question** | Higher: long prompts, plus a search system to run | Lower: short prompts |
+| **Good at** | Fast-changing facts, citations, large document sets | Stable vocabulary, style, behaviour, answer format |
+| **Weak at** | Behaviour and style | Fresh facts; risk of forgetting other skills |
 
 !!! tip "In practice teams combine both"
-    A common enterprise pattern: **fine-tune** for domain language, tone and answer format, and
-    use **RAG** for facts that change. This module focuses on the fine-tuning half. Seeing how far
-    closed-book knowledge can be pushed also shows you exactly what RAG buys you.
+    A common pattern: **fine-tune** for domain language, tone and answer format, and use **RAG**
+    for facts that change. This module focuses on fine-tuning, and seeing how far closed-book
+    knowledge can go also shows you what RAG buys you.
 
----
-
-## 2. Three techniques, three goals
-
-Fine-tuning isn't one thing. The three techniques in this module use different data and
-different objectives, and they change the model in different ways.
-
-```mermaid
-flowchart LR
-  B[Base instruct model] -->|CPT on raw domain text| C[Knows Lumora facts<br/>but rambles]
-  C -->|SFT on Q&A pairs| S[Knows facts<br/>+ answers like support]
-  S -->|DPO on preference pairs| D[Knows facts, answers well<br/>+ friendly tone]
-```
+### Three goals, three techniques
 
 | | Continued pretraining (CPT) | Supervised fine-tuning (SFT) | Direct preference optimisation (DPO) |
 |---|---|---|---|
-| **Goal** | Knowledge | Skills, task format | Behaviour: style, tone, safety |
-| **Data** | Raw domain text (manuals, policies, wikis) | Prompt -> ideal response | Prompt + *chosen* + *rejected* response |
-| **How much data** | Thousands of documents up to billions of tokens | Hundreds to tens of thousands of examples | Hundreds to tens of thousands of pairs |
+| **Goal** | Knowledge | Skills, answer format | Behaviour: style, tone, safety |
+| **Data** | Raw domain text (manuals, policies) | Prompt and ideal response | Prompt, a *chosen* and a *rejected* response |
 | **Learns from** | Every token | Response tokens only | The *difference* between chosen and rejected |
-| **Lab setup** | Full fine-tuning, 6 epochs, LR 3e-5 | LoRA r=16, 6 epochs, LR 2e-4 | LoRA r=16, 3 epochs, LR 5e-5, beta=0.1 |
+| **Lab setup** | Full fine-tuning, 6 epochs, LR 3e-5 | LoRA r=16, 6 epochs, LR 2e-4 | LoRA r=16, 3 epochs, LR 5e-5, beta 0.1 |
 | **Typical failure** | Forgets general skills | Learns the format, invents the facts | Over-optimisation: fluent but empty |
 
-The usual production order is **CPT -> SFT -> DPO**: first know, then do, then behave.
+In production the usual order is **CPT, then SFT, then DPO**: first know, then do, then behave.
+
+### The plan
+
+You'll train five models from the same small base model (Qwen2.5-0.5B on the free track), so each
+technique's effect can be measured on its own and in combination:
+
+```mermaid
+flowchart LR
+  B[Base model] -->|"Step 2: CPT"| C[cpt]
+  C -->|"Step 3: SFT"| CS[cpt+sft]
+  B -->|"Step 3: SFT"| S[sft]
+  B -->|"Step 4: DPO"| D[dpo]
+```
+
+Step 1 measures the base model, Steps 2-4 train, and Step 5 grades all five side by side.
+
+<div class="lab-card" markdown>
+**Open the lab now and work through it alongside this page**
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/vinothss/add_llmknowledge/blob/main/notebooks/03_customization.ipynb)
+
+The notebook uses the same step numbers as this page. Each step ends with a **▶ Lab** box.
+
+| Exercise | Step | The check confirms |
+|---|---|---|
+| 1. CPT data and full fine-tuning config | 2 | end-of-text tokens, no loss masking, a learning rate suited to full fine-tuning; held-out fact perplexity drops at least 30% |
+| 2. SFT data and LoRA | 3 | prompt/completion format, no contaminated pairs, LoRA on attention and MLP layers |
+| 3. DPO preference data | 4 | no style instruction in the prompt, chosen more casual than rejected; reward accuracy at least 80%, style shift on unseen prompts |
+| 4. Knowledge gain | 5 | CPT+SFT beats base by at least 15 points and beats SFT alone |
+</div>
 
 ---
 
-## 3. Continued pretraining (CPT): adding knowledge
+## Part A: Teach the facts
 
-### The objective
+### Step 1: Measure the baseline
 
-CPT uses exactly the same objective the model was originally pretrained with. For a document of
-tokens $x_1 \dots x_T$, the loss is the average negative log-probability of each token given
-everything before it:
+Every trained model is compared with the untouched base model on three measurements:
+
+- **Answers** to the 30 held-out Lumora questions, graded by the judge in Step 5
+- **Perplexity** on held-out Lumora fact sentences: how surprising the facts are to the model
+- **MMLU** on a small slice: whether training damaged general knowledge
+
+[Perplexity](https://en.wikipedia.org/wiki/Perplexity) is the exponential of the training loss,
+$\text{PPL} = e^{\mathcal{L}}$. Roughly, it's *how many tokens the model is choosing between* at
+each step: a perplexity of 20 means it's about as unsure as picking from 20 options. The fact
+sentences are the evaluation questions with their reference answers, which are never trained on.
+
+!!! example "▶ Lab: Step 1"
+    Run the setup and baseline cells. Note the base model's perplexity and MMLU, and read a few of
+    its answers.
+
+The base model finds Lumora's facts very surprising. The first technique changes that.
+
+---
+
+### Step 2: Continued pretraining (CPT)
+
+#### The objective
+
+CPT uses exactly the objective the model was originally trained with. For a document of tokens
+$x_1 \dots x_T$, the loss is the average negative log-probability of each token given everything
+before it:
 
 $$\mathcal{L}_\text{CPT} = -\frac{1}{T}\sum_{t=1}^{T} \log p_\theta(x_t \mid x_1, \dots, x_{t-1})$$
 
-Every token in the document is a training target. When the model reads "The Vault 10 weighs" and
-the next token is "98", the gradient pushes the weights so "98" becomes more likely in that context.
-Repeat this across every sentence for several epochs and the facts become part of the model's
-parametric memory. The technique is also called *domain-adaptive pretraining* (Gururangan et al.,
-2020, showed that continuing pretraining on in-domain text consistently helps downstream tasks).
+Every token is a training target. When the model reads "The Vault 10 weighs" and the next token is
+"98", the update makes "98" more likely in that context. Repeat across every sentence for several
+epochs and the facts become part of the model's memory. Gururangan et al. (2020) showed that
+continuing pretraining on in-domain text consistently helps.
 
-### Measuring it: perplexity
+#### Memorising vs knowing: why paraphrases matter
 
-[Perplexity](https://en.wikipedia.org/wiki/Perplexity) is the exponential of the loss: $\text{PPL} = e^{\mathcal{L}}$. Intuitively it's
-*how many tokens the model is choosing between* at each step. A perplexity of 20 means the model
-is about as uncertain as if it were picking uniformly among 20 options. The lab measures perplexity
-on **held-out Lumora fact sentences** (the eval questions plus their reference answers, which are
-never trained on). If CPT worked, those facts become much less surprising and perplexity drops
-sharply. The lab's check requires at least a 30% drop.
+A model that has seen "The Vault 10 weighs 98 kg" fifty times can *recite* it, but may still fail
+"How heavy is the Vault 10?". Allen-Zhu & Li (2023) found that models reliably answer new questions
+about a fact only when they saw it in **several phrasings** during training. One phrasing tends to
+be stored as a string, not as a fact.
 
-### Memorising vs knowing: why paraphrases matter
+That's why the CPT corpus contains each of the 20 Lumora documents **plus 2-3 paraphrases** written
+by an LLM (an FAQ version, a training-note version, a plain paragraph). A paraphrase was kept only
+if every number in the original survived. Even so, a few contain small errors, such as "after
+purchase" instead of "after delivery": **generated data needs the same checks as real data.**
 
-A model that has seen one sentence, "The Vault 10 weighs 98 kg", fifty times can *recite* it, but it
-may still fail "How heavy is the Vault 10?" or "What's the weight of Lumora's 10 kWh battery?".
-Research on how language models store facts (Allen-Zhu & Li, *Physics of Language Models*, Part 3.1,
-2023) found that models reliably **extract** a fact in answer to new questions only when they saw it
-in **several phrasings** during training. A single phrasing tends to be stored as a string, not as a
-fact.
+#### Full fine-tuning, not LoRA, for CPT
 
-That's why the shipped CPT corpus contains each of the 20 Lumora documents **plus 2-3 LLM-written
-paraphrases** (an FAQ version, a training-note version, a plain paragraph). Each paraphrase was
-kept only if every number in the original survived. Even so, a few contain small errors, such as
-"after purchase" instead of "after delivery". **Augmented data needs the same QA as original data.**
+The lab updates all of the model's roughly 494 million parameters (**full fine-tuning**). When this
+lab was built, LoRA-based CPT (explained in Step 3) reached about 27% on the Lumora test, while
+full CPT reached about 50%. That matches published findings: on knowledge-heavy training, LoRA
+learns substantially less than full fine-tuning (Biderman et al., 2024). It also forgets less,
+which is the other side of the same trade-off.
 
-### Full fine-tuning vs LoRA for CPT
-
-The lab uses **full fine-tuning** for CPT: every one of the model's roughly 494 million parameters is
-updated. The reason is empirical. In testing on this lab's data, LoRA-based CPT reached about 27% on
-the Lumora benchmark while full CPT reached about 50%. This matches published findings (Biderman et
-al., *LoRA Learns Less and Forgets Less*, 2024): on knowledge-heavy continued pretraining, LoRA
-substantially underperforms full fine-tuning. It also forgets less, which is the other side of the
-same trade-off. Section 5 explains why.
-
-??? info "Memory maths: does full fine-tuning fit on a free T4?"
+??? info "How it works: does full fine-tuning fit on a free T4?"
     Training with the Adam optimiser in fp32 needs about **16 bytes per parameter**:
 
     | Item | Bytes per parameter | 0.5B model |
@@ -136,71 +160,70 @@ same trade-off. Section 5 explains why.
     | Adam second moment (v) | 4 | 2 GB |
     | **Total, before activations** | **16** | **about 8 GB** |
 
-    A T4 has 16 GB, so a 0.5B model fits, but activations need room too. Over Qwen's 151,000-token
-    vocabulary, the output-layer activations alone are about 1-2 GB per batch of 4. So on GPUs the lab
-    uses **8-bit Adam**: the two moment buffers shrink from 8 to 2 bytes per parameter, saving about
-    3 GB. A 1.5B model (Pro track) would need about 24 GB at 16 bytes/param, so it also uses
-    **gradient checkpointing** (activations are recomputed during the backward pass instead of stored). A 7B model would need about 112 GB for full fine-tuning, which
-    is why LoRA exists.
+    A T4 has 16 GB, so a 0.5B model fits, but activations need room too: over Qwen's 151,000-token
+    vocabulary, the output layer alone needs 1-2 GB per batch of 4. So on GPUs the lab uses
+    **8-bit Adam**, which shrinks the two moment buffers from 8 to 2 bytes per parameter. A 1.5B
+    model (Pro track) would need about 24 GB, so it also uses **gradient checkpointing**
+    (recomputing activations during the backward pass instead of storing them). A 7B model would
+    need about 112 GB, which is why LoRA exists.
 
-### Catastrophic forgetting
+#### Catastrophic forgetting
 
-Every gradient step that makes Lumora facts more likely also moves weights that encoded other
-things. Push hard on a tiny corpus for many epochs and general ability degrades. This is called
-**catastrophic forgetting**. The lab tracks it with a small MMLU slice before and after each stage.
-Production recipes limit forgetting by:
+Every update that makes Lumora's facts more likely also moves weights that encoded other things.
+Push hard on a tiny corpus for many epochs and general ability degrades: **catastrophic
+forgetting**. The lab watches for it with the MMLU slice. Production recipes limit it by mixing in
+10-30% general text ("replay"), using a lower learning rate and fewer epochs, and stopping early if
+a general benchmark drops.
 
-- **Mixing in general data** ("replay"), e.g. 10-30% general text alongside the domain corpus
-- Using a **lower learning rate** and fewer epochs
-- **Monitoring** a general benchmark during training and stopping early if it drops
+#### Data format and pitfalls
 
-### CPT data format
-
-One document per row, with the end-of-sequence token appended so the model learns where documents
-stop:
+One document per row, with the end-of-text token appended so the model learns where documents stop:
 
 ```json
 {"text": "The Lumora Vault 10 is a wall-mounted home battery with 10.2 kWh of usable capacity. ... <|im_end|>"}
 ```
 
 !!! warning "CPT pitfalls"
-    - **Learning rate too high** for full fine-tuning (e.g. 2e-4, a LoRA rate): the loss spikes and
-      general ability collapses. Use about 1e-5 to 5e-5.
+    - **Learning rate too high** for full fine-tuning (for example 2e-4, a LoRA rate): the loss
+      spikes and general ability collapses. Use about 1e-5 to 5e-5.
     - **Too few epochs on a tiny corpus:** the facts never stick. The lab uses 6 epochs over 68 texts.
-    - **Too many epochs:** the training loss goes to about 0 and the model starts reciting documents
-      verbatim when asked anything.
+    - **Too many epochs:** the training loss approaches 0 and the model recites documents when asked
+      anything.
+
+!!! example "▶ Lab: Exercise 1, prepare the CPT data and training config"
+    Add end-of-text tokens, choose a learning rate suited to full fine-tuning, and train. The check
+    requires perplexity on the held-out facts to drop by at least 30%.
+
+After CPT the model *knows* more, but it was trained to continue documents. Ask it a question and
+it may carry on writing a manual page. That's the next problem.
 
 ---
 
-## 4. Supervised fine-tuning (SFT): teaching a skill
+## Part B: Teach it to answer
 
-### What SFT is for
+### Step 3: Supervised fine-tuning (SFT) with LoRA
 
-After CPT the model *knows* more, but it was trained to continue documents. Ask it a question and
-it may continue writing a manual page. SFT shows the model many examples of
-**input -> desired output**, so it learns the *behaviour*: here, answering a support question in one
-short, accurate sentence.
+#### What SFT is for
 
-### The objective, and loss masking
+SFT shows the model many examples of **input and desired output**, so it learns a *behaviour*:
+here, answering a support question in one short, accurate sentence. The training data is the Q&A
+set from Module 1.
+
+#### The objective, and loss masking
 
 The loss has the same form as CPT, but only the **response tokens** count:
 
 $$\mathcal{L}_\text{SFT} = -\frac{1}{|R|}\sum_{t \in R} \log p_\theta(x_t \mid x_{<t})$$
 
-where $R$ is the set of positions in the assistant's reply. The prompt is still fed through the
-model as context, but its tokens are **masked** (their labels are set to -100) so they contribute no
-gradient:
+where $R$ is the set of positions in the assistant's reply. The prompt is still read as context,
+but its tokens are **masked** (their labels set to -100) so they contribute nothing to the update:
 
 | Tokens | `<system>` You are Lumora's support assistant... | `<user>` How long is the Vault warranty? | `<assistant>` 12 years. `<end>` |
 |---|---|---|---|
 | **In the loss?** | no (masked) | no (masked) | **yes** |
 
-Without masking, a share of the training effort goes into learning to *generate questions and
-system prompts*, which is wasted work and can leak into outputs. In TRL you get masking by giving
-the data in **prompt/completion** format; the trainer applies the model's chat template and masks
-the prompt automatically.
-
-### SFT data format
+Without masking, part of the training effort goes into learning to *write questions and system
+prompts*. In TRL you get masking by giving the data in **prompt/completion** format:
 
 ```json
 {
@@ -218,131 +241,114 @@ the prompt automatically.
     Instruct models are trained with special tokens that mark who is speaking. Qwen2.5, for
     example, wraps each turn in `<|im_start|>role ... <|im_end|>`. The **chat template** (stored
     with the tokenizer) turns a list of messages into that exact string. Always use the model's own
-    template, both in training and at inference. A mismatch is one of the most common reasons a
-    fine-tuned model suddenly behaves strangely. Read more: [Hugging Face chat templates guide](https://huggingface.co/docs/transformers/chat_templating).
+    template, in training and at inference: a mismatch is one of the most common reasons a
+    fine-tuned model behaves strangely. Read more in the
+    [Hugging Face chat templates guide](https://huggingface.co/docs/transformers/chat_templating).
 
-### Quality beats quantity
+#### Quality beats quantity
 
-The LIMA study (Zhou et al., 2023) fine-tuned a 65B model on just **1,000 carefully curated
-examples** and got a strong assistant, evidence that SFT mainly teaches *format and behaviour* the
-model can already partly do. The same logic explains a key lab result:
+The LIMA study (Zhou et al., 2023) fine-tuned a 65B model on just **1,000 carefully chosen
+examples** and got a strong assistant: evidence that SFT mainly teaches *format and behaviour*,
+not new knowledge. You'll see the same in Step 5.
 
-!!! example "Lab result: SFT alone doesn't add knowledge"
-    | Model | Lumora accuracy | Why |
-    |---|---|---|
-    | base | about 10% | No knowledge, rambling format |
-    | **SFT only** | **about 20%** | Perfect one-sentence format, **invented facts** |
-    | CPT only | about 50% | Knows facts, but answers can ramble or drift |
-    | **CPT -> SFT** | **about 70%** | Knowledge **plus** the answer format |
+#### Decontamination: keep the test out of training
 
-    SFT on about 90 Q&A pairs can't teach 20 documents' worth of facts. It teaches the model *how*
-    to answer, and the model fills that shape with whatever it knows. With CPT first, it knows
-    the right things.
+The Q&A pairs were generated from the same 20 documents the test questions were written from, so
+some are near-copies of test questions:
 
-### Decontamination: don't let your test leak into training
-
-The SFT pairs were generated from the same 20 documents the evaluation questions were written from,
-so some generated questions are near-copies of evaluation questions:
-
-| Training question (generated) | Evaluation question (held out) |
+| Training question (generated) | Test question (held out) |
 |---|---|
 | "What is the usable capacity of the Lumora Vault 10?" | "What is the usable capacity of the Lumora Vault 10?" |
 | "How many Vault 15 units can be connected to a single Bridge inverter?" | "What is the maximum number of Vault 15 units on a single Bridge inverter?" |
 
-Training on these would inflate the score without teaching anything new. It's like giving students
-the exam questions to study. The lab compares **content words** (words left after removing "the",
-"what", "is" and so on) and computes their **[Jaccard similarity](https://en.wikipedia.org/wiki/Jaccard_index)** (the same measure Module 1 uses for deduplication):
+Training on these would inflate the score without teaching anything, like giving students the
+exam to study. The lab compares **content words** (what's left after removing "the", "what", "is"
+and so on) using **[Jaccard similarity](https://en.wikipedia.org/wiki/Jaccard_index)**, the same
+measure Module 1 used for deduplication:
 
 $$J(A, B) = \frac{|A \cap B|}{|A \cup B|}$$
 
-Any training question with $J \ge 0.6$ against any evaluation question is dropped. With the shipped
-data that removes 13 of 101 pairs. Public benchmarks suffer from the same problem at internet scale,
-and it's called **benchmark contamination**.
+Any training question with $J \ge 0.6$ against a test question is dropped; with the shipped data
+that removes 13 of 101 pairs. At internet scale the same problem is called **benchmark
+contamination**.
 
----
+#### LoRA: training a small fraction of the parameters
 
-## 5. LoRA: fine-tuning with a fraction of the parameters
+SFT here uses **LoRA** rather than full fine-tuning. Full fine-tuning updates every weight matrix
+$W$. Hu et al. (2021) observed that the *change* needed during fine-tuning, $\Delta W$, can usually
+be approximated by the product of two thin matrices. LoRA freezes $W$ and learns only those:
 
-### The idea
+$$W' = W + \frac{\alpha}{r} B A, \qquad B \in \mathbb{R}^{d \times r},\; A \in \mathbb{R}^{r \times k},\; r \ll \min(d, k)$$
 
-Full fine-tuning updates every weight matrix $W$ (for example 896 x 896 in an attention projection).
-Hu et al. (2021) observed that the *change* needed during fine-tuning, $\Delta W$, tends to be
-**low-rank**: it can be well approximated by the product of two thin matrices. LoRA freezes $W$ and
-learns only those two thin matrices:
+- $r$, the **rank**, controls capacity. The lab uses 16.
+- $\alpha$ is a scaling factor; the lab uses $\alpha = 2r = 32$, a common default.
+- $B$ starts at zero, so before training the model is exactly the original.
+- After training, $BA$ can be **merged** into $W$, so there's no extra cost at inference.
 
-$$W' = W + \Delta W = W + \frac{\alpha}{r} B A, \qquad B \in \mathbb{R}^{d \times r},\; A \in \mathbb{R}^{r \times k},\; r \ll \min(d, k)$$
+??? info "How it works: how big is a LoRA adapter?"
+    For a matrix of shape $d \times k$, the adapter adds $r(d + k)$ parameters. For Qwen2.5-0.5B
+    (hidden size 896, MLP size 4864, 24 layers) with $r = 16$ on all seven projection matrices:
 
-- $r$ (the **rank**) controls capacity. The lab uses 16.
-- $\alpha$ is a scaling factor. The lab uses $\alpha = 2r = 32$, a common default.
-- $B$ starts at zero, so at step 0 the model is exactly the original.
-- After training, $BA$ can be **merged** into $W$ (`merge_and_unload()`), so there's no extra
-  inference cost.
+    | Matrix | Shape | LoRA params, r(d+k) |
+    |---|---|---|
+    | q_proj, o_proj | 896 x 896 | 28,672 each |
+    | k_proj, v_proj | 896 x 128 | 16,384 each |
+    | gate_proj, up_proj | 896 x 4864 | 92,160 each |
+    | down_proj | 4864 x 896 | 92,160 |
+    | **Per layer** | | **366,592** |
+    | **24 layers** | | **about 8.8M, under 2% of 494M** |
 
-### How big is a LoRA adapter?
-
-For a matrix of shape $d \times k$, the adapter adds $r(d + k)$ parameters. For Qwen2.5-0.5B (hidden
-size 896, MLP size 4864, 24 layers) with $r = 16$ on all seven projection matrices:
-
-| Matrix | Shape | LoRA params, r(d+k) |
-|---|---|---|
-| q_proj, o_proj | 896 x 896 | 28,672 each |
-| k_proj, v_proj | 896 x 128 | 16,384 each |
-| gate_proj, up_proj | 896 x 4864 | 92,160 each |
-| down_proj | 4864 x 896 | 92,160 |
-| **Per layer** | | **366,592** |
-| **24 layers** | | **about 8.8M, under 2% of 494M** |
-
-The optimiser only tracks those 8.8M parameters, so the training memory needed is a small fraction
-of full fine-tuning. **QLoRA** (Dettmers et al., 2023) goes further by storing the frozen base model
-in 4-bit, which is how people fine-tune 7-8B models on a single consumer GPU.
-
-### Which layers to adapt
+    The optimiser only tracks those 8.8M parameters, so training needs a fraction of the memory.
+    **QLoRA** (Dettmers et al., 2023) also stores the frozen model in 4-bit, which is how people
+    fine-tune 7-8B models on one consumer GPU.
 
 Transformer blocks have **attention** projections (q, k, v, o) and **MLP** projections (gate, up,
-down). Interpretability research suggests factual associations are stored largely in the MLP
-layers, and adapting only q and v (as in the original LoRA paper) is noticeably weaker for
-instruction tuning. The lab adapts **all seven**, which is the modern default.
-
-### LoRA vs full fine-tuning: choosing
+down). Facts seem to be stored largely in the MLP layers, and adapting only q and v, as the
+original LoRA paper did, is noticeably weaker. The lab adapts **all seven**, the modern default.
 
 | | LoRA | Full fine-tuning |
 |---|---|---|
-| Trainable params | about 1-2% | 100% |
-| Memory | Low (frozen base, small optimiser state) | About 16 bytes/param |
+| Trainable parameters | about 1-2% | 100% |
+| Memory | Low | About 16 bytes per parameter |
 | Learns new **facts** | Weakly | Well |
-| Learns **format / style** | Well | Well |
+| Learns **format and style** | Well | Well |
 | Forgets general skills | Less | More |
-| Storage | A few MB per adapter; swap adapters per customer | A full model copy per variant |
+| Storage | A few MB per adapter | A full copy per variant |
 | **Lab use** | SFT, DPO | CPT |
 
-Rule of thumb: **LoRA when you're changing *how* the model behaves; full fine-tuning (or high-rank
-LoRA) when you're changing *what* it knows.**
+Rule of thumb: **LoRA when you're changing *how* the model behaves; full fine-tuning when you're
+changing *what* it knows.**
+
+!!! example "▶ Lab: Exercise 2, prepare the SFT data and LoRA config"
+    Convert the Q&A pairs to prompt/completion format, drop contaminated pairs, and target LoRA at
+    all seven projections. Then train two models: SFT on the base model, and SFT on the CPT model.
+
+The model now knows Lumora's facts and answers like support staff. The last goal is how it sounds.
 
 ---
 
-## 6. DPO: aligning behaviour with preferences
+## Part C: Teach it Lumora's voice
 
-### Why preferences?
+### Step 4: Give it Lumora's voice with DPO
 
-Some goals are hard to express as a single "correct" answer. What's the *ideal* friendly reply to
-"My package hasn't arrived"? There are thousands of good ones. But people find it easy to compare
-two replies and say which is better. **Preference data** captures that: for each prompt, a
-**chosen** reply and a **rejected** reply.
+#### Why preferences?
 
-### From RLHF to DPO
+Some goals have no single correct answer. What's the *ideal* friendly reply to "My package hasn't
+arrived"? There are thousands. But people find it easy to compare two replies and say which is
+better. **Preference data** captures that: for each prompt, a **chosen** reply and a **rejected**
+one.
 
-The classic recipe, **[RLHF](https://en.wikipedia.org/wiki/Reinforcement_learning_from_human_feedback)** (used for InstructGPT, Ouyang et al., 2022), works in three steps:
+#### From RLHF to DPO
 
-1. Collect preference pairs.
-2. Train a separate **reward model** to score replies the way humans would.
-3. Optimise the LLM with reinforcement learning (PPO) to maximise that reward, with a penalty for
-   drifting too far from the original model.
+The classic recipe, **[RLHF](https://en.wikipedia.org/wiki/Reinforcement_learning_from_human_feedback)**
+(used for InstructGPT, Ouyang et al., 2022), has three stages: collect preference pairs, train a
+separate **reward model** to score replies as people would, then optimise the LLM with
+reinforcement learning to maximise that reward without drifting too far from the original. It works,
+but it means training several models and is notoriously finicky. **DPO** (Rafailov et al., 2023)
+showed the same goal can be reached **directly** from the preference pairs with a simple
+classification-style loss: no reward model and no reinforcement learning.
 
-It works, but it means training and running several models and is notoriously finicky.
-**DPO** (Rafailov et al., 2023) showed that the same objective can be optimised **directly** on the
-preference pairs with a simple classification-style loss. There's no reward model and no RL loop.
-
-### The DPO loss, unpacked
+#### The DPO loss, unpacked
 
 For a prompt $x$ with chosen reply $y_w$ and rejected reply $y_l$:
 
@@ -353,19 +359,18 @@ In words:
 - $\pi_\theta$ is the model being trained; $\pi_\text{ref}$ is a **frozen copy** of where it started.
 - Each log-ratio measures how much the model has changed its opinion of a reply since training began.
 - The loss is low when the model has raised the chosen reply **more** than the rejected one.
-- $\sigma$ is the sigmoid, so the loss behaves like logistic regression on "is chosen preferred?"
-- $\beta$ scales how strongly differences count, and in effect how far the model is **allowed to drift**
-  from the reference. A small $\beta$ (0.05) allows big changes; a large $\beta$ (0.5) keeps the model close
-  to where it started. 0.1 is a common default.
+- $\sigma$ is the sigmoid, so the loss works like logistic regression on "is chosen preferred?"
+- $\beta$ sets how far the model is **allowed to drift** from the reference. A small $\beta$ (0.05)
+  allows big changes; a large one (0.5) keeps it close. 0.1 is a common default.
 
 With LoRA you don't need a second model in memory: the reference is the same network with the
 adapter switched off.
 
-### Building the preference pairs (and the trap)
+#### Building the preference pairs, and the trap
 
-The lab synthesises pairs by asking the 1.5B model to answer each everyday prompt twice: once with
-a "warm, casual, use contractions" instruction (**chosen**) and once with a "formal, impersonal,
-no contractions" instruction (**rejected**).
+The lab asks the 1.5B model to answer each everyday prompt twice: once told to be "warm, casual,
+use contractions" (**chosen**) and once told to be "formal, impersonal, no contractions"
+(**rejected**).
 
 ```json
 {
@@ -377,58 +382,91 @@ no contractions" instruction (**rejected**).
 
 !!! danger "Don't leak the style instruction"
     The instruction used to *generate* the chosen reply ("reply casually...") must **not** be in
-    the training prompt. If it is, the model learns "when told to be casual, be casual". That's
-    instruction-following, which it could already do. At inference nobody adds that instruction,
-    so the style never appears. The lab's starter code makes exactly this mistake on purpose, and
-    the check catches it.
+    the training prompt. If it is, the model learns "when told to be casual, be casual", which it
+    could already do. At inference nobody adds that instruction, so the style never appears. The
+    lab's starter code makes exactly this mistake on purpose, and the check catches it.
 
-### Reading DPO training logs
-
-TRL logs these metrics. Knowing what healthy values look like is half the job:
+#### Reading the training logs
 
 | Metric | Meaning | Healthy pattern |
 |---|---|---|
 | `rewards/chosen` | $\beta \times$ log-ratio for chosen replies | Stays near 0 or rises |
-| `rewards/rejected` | Same for rejected replies | Falls (becomes negative) |
-| `rewards/margins` | chosen - rejected | Grows steadily |
+| `rewards/rejected` | The same for rejected replies | Falls (becomes negative) |
+| `rewards/margins` | chosen minus rejected | Grows steadily |
 | `rewards/accuracies` | Share of pairs where chosen beats rejected | Rises towards 0.8-1.0 |
 
-In the lab's test run at LR 5e-5, final values were about chosen -1.1, rejected -9.9, margin 8.8,
-accuracy 1.0. The casualness score on **unseen** prompts rose from 0.17 to 0.77, close to the chosen
-replies' own 0.63.
-
 !!! note "Chosen rewards can go *down* too"
-    It's common for both rewards to fall, with rejected falling much faster. The margin still grows,
-    so the loss is happy, but the model has made the chosen replies *less* likely in absolute terms.
-    This "likelihood displacement" is a known DPO quirk and one reason to always inspect actual
-    generations, not just metrics.
+    It's common for both rewards to fall, with rejected falling much faster. The margin grows, so
+    the loss looks fine, but the model has made the chosen replies *less* likely in absolute terms.
+    This "likelihood displacement" is a known DPO quirk, and one reason to always read actual
+    replies, not just metrics.
 
-### Over-optimisation (reward hacking)
+#### Over-optimisation
 
-At a 4x higher learning rate (2e-4) the lab's model reached even better reward metrics, and its
-replies collapsed into content-free cheerfulness:
+Push too hard and DPO games its own signal. At a 4x higher learning rate (2e-4) the lab's model
+reached even better reward metrics, and its replies collapsed into empty cheerfulness:
 
 > "Hey there! Here's some fun ideas!"
 
-The model found that exclamation marks and contractions were what separated chosen from rejected,
-and maximised *those* at the expense of helpfulness. **Every proxy metric can be gamed.** Defences:
-a sensible $\beta$ and learning rate, fewer epochs, and evaluating helpfulness alongside style.
+It found that exclamation marks and contractions were what separated chosen from rejected, and
+maximised *those* at the expense of helpfulness. **Any proxy metric can be gamed.** Defences: a
+sensible $\beta$ and learning rate, fewer epochs, and evaluating helpfulness alongside style. You'll
+meet this again in Module 5.
 
 ??? info "Beyond DPO: the alignment family"
     | Method | Idea |
     |---|---|
-    | **RLHF / PPO** | Reward model + reinforcement learning. Most flexible, most complex |
+    | **RLHF / PPO** | Reward model plus reinforcement learning. Most flexible, most complex |
     | **DPO** | Direct optimisation on preference pairs (this lab) |
-    | **IPO** | Adds regularisation against overfitting to deterministic preferences |
-    | **KTO** | Needs only "good" or "bad" labels per reply, not pairs |
+    | **IPO** | Adds regularisation against overfitting to preferences |
+    | **KTO** | Needs only a "good" or "bad" label per reply, not pairs |
     | **ORPO** | Combines SFT and preference optimisation in one stage, no reference model |
     | **SimPO** | Reference-free, length-normalised reward |
 
-    NeMo-RL and TRL implement several of these. The data and evaluation discipline is the same for all.
+    NeMo-RL and TRL implement several of these. The data and evaluation discipline is the same.
+
+!!! example "▶ Lab: Exercise 3, build the preference pairs"
+    Write `to_preference` without leaking the style instruction, train with DPO, and watch the
+    reward metrics. The check requires reward accuracy of at least 80% and a style shift on prompts
+    the model never saw. Optionally, re-run with learning rate 2e-4 and read what happens.
+
+You now have five models. Time to find out what each technique really did.
 
 ---
 
-## 7. Hyperparameters used in the lab, and why
+## Part D: Compare the results
+
+### Step 5: Grade everything with Module 2's judge
+
+The notebook recalibrates Module 2's judge (same method, same data) and grades all five models'
+answers. Results from our reference run (yours will vary by a few points):
+
+| Model | Lumora accuracy | Fact perplexity | MMLU | What happened |
+|---|---|---|---|---|
+| base | 10% | 86 | 68% | Doesn't know Lumora |
+| sft | 20% | 50 | 70% | Perfect one-sentence format, **invented facts** |
+| cpt | 50% | 15 | 70% | Knows the facts, but answers can ramble |
+| **cpt+sft** | **70%** | **11** | 70% | Knowledge **plus** the answer format |
+| dpo | 3% | 86 | 68% | Casual tone, no Lumora knowledge: it chats instead of stating facts |
+
+Three lessons:
+
+1. **SFT alone doesn't add knowledge.** About 90 Q&A pairs can't teach 20 documents' worth of
+   facts. SFT teaches *how* to answer, and the model fills that shape with whatever it knows. With
+   CPT first, it knows the right things.
+2. **Perplexity on held-out facts fell from 86 to 11**, even though the model never saw those
+   exact sentences: the knowledge generalised.
+3. **MMLU didn't move** on the 50-question slice, so there's no measurable forgetting at this
+   scale. Longer training or a bigger corpus can cost general knowledge, so always check.
+
+The DPO model also shows why techniques stack: it learned the voice (its casualness score on unseen
+prompts rose from 0.17 to 0.77) but, trained on the base model, it knows nothing about Lumora.
+
+!!! example "▶ Lab: Exercise 4, grade the five models"
+    Grade every model with the recalibrated judge and compare with the table above. The check
+    requires CPT+SFT to beat the base model by at least 15 points and to beat SFT alone.
+
+#### The hyperparameters, and why
 
 | | CPT | SFT | DPO |
 |---|---|---|---|
@@ -437,74 +475,104 @@ a sensible $\beta$ and learning rate, fewer epochs, and evaluating helpfulness a
 | Epochs | 6 | 6 | 3 |
 | Batch size | 8 | 8 | 4 x 2 accumulation |
 | Schedule | Cosine, 2 warm-up steps | Cosine | Cosine |
-| Why | Small LR protects general ability; several epochs because the corpus is tiny | LoRA tolerates a higher LR; repeated passes fix the format | Gentle LR avoids over-optimisation; beta=0.1 standard anchor |
+| Why | A small learning rate protects general ability; several epochs because the corpus is tiny | LoRA tolerates a higher rate; repeated passes fix the format | A gentle rate avoids over-optimisation; beta 0.1 is the standard anchor |
 
-Learning rates differ by about 10x between full fine-tuning and LoRA because LoRA's update starts
-at zero and is scaled by $\alpha / r$. Copying a LoRA learning rate into a full fine-tune is one of
-the most common ways to wreck a model.
+Learning rates differ by about 10x between full fine-tuning and LoRA because LoRA's update starts at
+zero and is scaled by $\alpha / r$. Copying a LoRA learning rate into a full fine-tune is one of the
+most common ways to wreck a model.
 
-## 8. Common pitfalls checklist
+### Module result
 
-- [ ] Eval questions (or near-copies) in training data: **decontaminate**
-- [ ] Chat template differs between training and inference: **always use the tokenizer's template**
-- [ ] SFT loss computed on prompts: **use prompt/completion format**
-- [ ] LoRA learning rate used for full fine-tuning: **drop it about 10x**
-- [ ] Style instruction left in DPO prompts: **remove it**
-- [ ] Only metrics checked, no samples read: **always eyeball generations**
-- [ ] General ability not re-checked: **run MMLU (or similar) after every stage**
-
----
-
-## Lab
-
-<div class="lab-card" markdown>
-**Lab 3: Build a Lumora assistant that knows the products, answers like support, and sounds friendly**
-
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/vinothss/add_llmknowledge/blob/main/notebooks/03_customization.ipynb)
-
-You train five models (base, SFT, CPT, CPT+SFT, DPO) and grade them with Module 2's calibrated judge.
-
-| Exercise | Auto-check |
-|---|---|
-| 1. CPT dataset + full fine-tuning config | EOS tokens, no loss masking, learning rate suited to full FT; perplexity on held-out facts drops at least 30% |
-| 2. SFT data + LoRA | prompt/completion format, no contaminated pairs, LoRA on attention + MLP |
-| 3. DPO preference data | no style leak in the prompt, chosen more casual than rejected; reward accuracy at least 80%, style shift on unseen prompts |
-| 4. Knowledge gain | CPT+SFT beats base by at least 15 points and beats SFT alone |
-
-Results are logged to MLflow and saved as `results.json` for Module 4.
-</div>
+The notebook logs every model to MLflow and saves `results.json`. You now have an assistant that
+knows Lumora and answers like support. Module 4 asks the next question: how to make a model like
+this small and fast enough to deploy.
 
 <div class="lab-complete" data-id="m03"></div>
 
-## How this maps to NVIDIA NeMo
+---
+
+## Wrap-up
+
+### Key takeaways
+
+- **CPT adds knowledge, SFT adds skills, DPO shapes behaviour.** Use the right tool for the goal,
+  and stack them: CPT, then SFT, then DPO.
+- **LoRA changes behaviour cheaply; full fine-tuning changes knowledge.**
+- **Keep the test out of training,** or your scores mean nothing.
+- **Read the outputs, not just the metrics.** Over-optimised DPO and likelihood displacement both
+  look fine on the reward curves.
+- **Check general ability after every stage.**
+
+### At production scale: NVIDIA NeMo
 
 | Lab (TRL + PEFT) | NeMo Framework / NeMo-RL |
 |---|---|
 | `SFTTrainer` on plain text (CPT) | NeMo 2.0 pretraining recipe resumed from a checkpoint |
 | `SFTTrainer` prompt/completion + LoRA | NeMo `finetune` recipe with `peft="lora"` |
-| `DPOTrainer` (`beta`, reference model) | NeMo-RL DPO with a reference-policy KL penalty |
+| `DPOTrainer` (`beta`, reference model) | NeMo-RL DPO with a reference-policy penalty |
 | `merge_and_unload()` | NeMo LoRA merge, then export for deployment |
 
-The concepts, data formats and failure modes are identical. NeMo adds multi-GPU and multi-node
-parallelism (tensor, pipeline and data parallel) for models far larger than a T4 can hold.
+The concepts, data formats and failure modes are the same. NeMo adds multi-GPU and multi-node
+training for models far larger than a T4 can hold.
 
-## Glossary
+### Common pitfalls
+
+- [ ] Test questions, or near-copies, in the training data: **decontaminate**
+- [ ] Different chat templates in training and inference: **always use the tokenizer's template**
+- [ ] SFT loss computed on prompts: **use prompt/completion format**
+- [ ] A LoRA learning rate used for full fine-tuning: **drop it about 10x**
+- [ ] Style instruction left in DPO prompts: **remove it**
+- [ ] Only metrics checked, no replies read: **always read generations**
+- [ ] General ability not re-checked: **run MMLU, or similar, after every stage**
+
+### Knowledge check
+
+<script type="application/json" class="quiz" data-id="m03">
+[
+  {"q": "Your product specs change every month. What's the best way to keep an assistant accurate on them?",
+   "options": ["Continued pretraining every month", "Retrieval (RAG) for the specs, with fine-tuning for tone and format", "DPO on the new specs", "A bigger base model"],
+   "answer": 1, "why": "Fast-changing facts belong in retrieval; fine-tuning is best for stable knowledge, format and behaviour."},
+  {"q": "After SFT alone, the model answers in the perfect support format but gets most facts wrong. Why?",
+   "options": ["The learning rate was too low", "SFT teaches format and skills; without the knowledge, the model fills the format with invented facts", "LoRA cannot be used for SFT", "The judge is broken"],
+   "answer": 1, "why": "In the lab, SFT alone reached about 20% against about 70% for CPT followed by SFT."},
+  {"q": "Why does the lab use full fine-tuning rather than LoRA for continued pretraining?",
+   "options": ["LoRA can't train on plain text", "Low-rank updates absorb new facts poorly; full fine-tuning reached about 50% vs about 27% for LoRA", "Full fine-tuning uses less memory", "TRL requires it"],
+   "answer": 1, "why": "LoRA learns less (and forgets less). Adding knowledge needs more capacity."},
+  {"q": "How many trainable parameters does a rank-16 LoRA add to one 896 x 4864 matrix?",
+   "options": ["16", "about 92,000", "about 4.4 million", "896 x 4864"],
+   "answer": 1, "why": "r(d+k) = 16 x (896 + 4864) = 92,160."},
+  {"q": "Why use the prompt/completion format for SFT?",
+   "options": ["It makes training faster", "Loss is computed only on the answer, so the model learns to answer rather than to write questions", "TRL requires it for LoRA", "It removes the need for a chat template"],
+   "answer": 1, "why": "Masking the prompt focuses all learning on the response."},
+  {"q": "A DPO training prompt reads: 'Reply casually. How do I reset my password?' What's wrong?",
+   "options": ["Nothing", "The style instruction leaks into the prompt, so the model learns to obey it rather than adopt the style unprompted", "Prompts must be in the system role", "DPO prompts cannot be questions"],
+   "answer": 1, "why": "At inference nobody adds 'reply casually', so the style must be learned from the preference signal alone."},
+  {"q": "In DPO, what does increasing beta from 0.1 to 0.5 do?",
+   "options": ["Lets the model drift further from the reference", "Keeps the model closer to the reference model", "Doubles the learning rate", "Removes the need for rejected replies"],
+   "answer": 1, "why": "beta anchors the model: a larger beta pulls it more strongly towards the reference."},
+  {"q": "DPO reward accuracy hits 100% but replies become 'Hey there! Here's some fun ideas!' What happened?",
+   "options": ["Catastrophic forgetting of style", "Over-optimisation: the model maximised surface style signals and dropped helpfulness", "A tokenizer bug", "The reference model was too strong"],
+   "answer": 1, "why": "Metrics can be gamed. Read generations and tune beta and the learning rate."}
+]
+</script>
+
+### Glossary
 
 | Term | Meaning |
 |---|---|
 | **Parametric knowledge** | Information stored in the model's weights |
 | [**Perplexity**](https://en.wikipedia.org/wiki/Perplexity) | $e^{\text{loss}}$; roughly how many tokens the model is choosing between |
 | **Epoch** | One full pass over the training data |
-| **Loss masking** | Excluding tokens (e.g. the prompt) from the loss by setting their label to -100 |
-| [**Chat template**](https://huggingface.co/docs/transformers/chat_templating) | Recipe that turns a list of messages into the special-token string a model expects |
-| [**LoRA rank (r)**](https://huggingface.co/docs/peft/main/en/conceptual_guides/lora) | Width of the low-rank update; higher means more capacity |
+| **Loss masking** | Excluding tokens, such as the prompt, from the loss by setting their label to -100 |
+| [**Chat template**](https://huggingface.co/docs/transformers/chat_templating) | The recipe that turns a list of messages into the special-token string a model expects |
+| [**LoRA rank (r)**](https://huggingface.co/docs/peft/main/en/conceptual_guides/lora) | The width of the low-rank update; higher means more capacity |
 | **Merge** | Folding a LoRA update into the base weights for deployment |
-| [**Reference model**](https://huggingface.co/docs/trl/dpo_trainer) | Frozen starting copy that DPO measures change against |
-| [**beta**](https://huggingface.co/docs/trl/dpo_trainer) | DPO strength / anchor: how far the model may drift from the reference |
+| [**Reference model**](https://huggingface.co/docs/trl/dpo_trainer) | The frozen starting copy that DPO measures change against |
+| [**beta**](https://huggingface.co/docs/trl/dpo_trainer) | How far DPO lets the model drift from the reference |
 | [**Catastrophic forgetting**](https://en.wikipedia.org/wiki/Catastrophic_interference) | Loss of general ability after narrow fine-tuning |
-| **Contamination** | Evaluation items (or near-copies) present in training data |
+| **Contamination** | Test items, or near-copies, present in training data |
 
-## Further reading
+### Further reading
 
 **Papers**
 
@@ -532,34 +600,3 @@ parallelism (tensor, pipeline and data parallel) for models far larger than a T4
 - [Hugging Face PEFT: LoRA conceptual guide](https://huggingface.co/docs/peft/main/en/conceptual_guides/lora)
 - [TRL: SFTTrainer documentation](https://huggingface.co/docs/trl/sft_trainer)
 - [TRL: DPOTrainer documentation](https://huggingface.co/docs/trl/dpo_trainer)
-
-## Knowledge check
-
-<script type="application/json" class="quiz" data-id="m03">
-[
-  {"q": "Your product specs change every month. What's the best way to keep an assistant accurate on them?",
-   "options": ["Continued pretraining every month", "Retrieval (RAG) for the specs, with fine-tuning for tone and format", "DPO on the new specs", "A bigger base model"],
-   "answer": 1, "why": "Fast-changing facts belong in retrieval; fine-tuning is best for stable knowledge, format and behaviour."},
-  {"q": "After SFT alone, the model answers in the perfect support format but gets most facts wrong. Why?",
-   "options": ["The learning rate was too low", "SFT teaches format and skills; without the knowledge, the model fills the format with invented facts", "LoRA cannot be used for SFT", "The judge is broken"],
-   "answer": 1, "why": "In the lab, SFT alone reached about 20% against about 70% for CPT followed by SFT."},
-  {"q": "Why does the lab use full fine-tuning rather than LoRA for continued pretraining?",
-   "options": ["LoRA can't train on plain text", "Low-rank updates absorb new facts poorly; full fine-tuning reached about 50% vs about 27% for LoRA", "Full fine-tuning uses less memory", "TRL requires it"],
-   "answer": 1, "why": "LoRA learns less (and forgets less). Knowledge injection needs more capacity."},
-  {"q": "How many trainable parameters does a rank-16 LoRA add to one 896 x 4864 matrix?",
-   "options": ["16", "about 92,000", "about 4.4 million", "896 x 4864"],
-   "answer": 1, "why": "r(d+k) = 16 x (896 + 4864) = 92,160."},
-  {"q": "Why use the prompt/completion format for SFT?",
-   "options": ["It makes training faster", "Loss is computed only on the answer, so the model learns to answer rather than to write questions", "TRL requires it for LoRA", "It removes the need for a chat template"],
-   "answer": 1, "why": "Masking the prompt focuses all learning on the response."},
-  {"q": "A DPO training prompt reads: 'Reply casually. How do I reset my password?' What's wrong?",
-   "options": ["Nothing", "The style instruction leaks into the prompt, so the model learns to obey it rather than adopt the style unprompted", "Prompts must be in the system role", "DPO prompts cannot be questions"],
-   "answer": 1, "why": "At inference nobody adds 'reply casually', so the style must be learned from the preference signal alone."},
-  {"q": "In DPO, what does increasing beta from 0.1 to 0.5 do?",
-   "options": ["Lets the model drift further from the reference", "Keeps the model closer to the reference model", "Doubles the learning rate", "Removes the need for rejected replies"],
-   "answer": 1, "why": "beta anchors the policy: larger beta means stronger pull towards the reference."},
-  {"q": "DPO reward accuracy hits 100% but replies become 'Hey there! Here's some fun ideas!' What happened?",
-   "options": ["Catastrophic forgetting of style", "Over-optimisation (reward hacking): the model maximised surface style signals and dropped helpfulness", "A tokenizer bug", "The reference model was too strong"],
-   "answer": 1, "why": "Metrics can be gamed. Read generations and tune beta and the learning rate."}
-]
-</script>

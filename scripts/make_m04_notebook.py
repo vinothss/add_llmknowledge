@@ -17,12 +17,17 @@ cells += [md(f"""# Module 4 - Optimising LLMs for deployment
 **Scenario.** Lumora's assistant works, and now finance wants it cheaper and faster. You'll try the
 three main compression techniques on the student model and measure what each one costs in accuracy:
 
-| Part | Technique | Question |
+**Follow along with the Module 4 page in the portal: the step numbers match.**
+
+| Step | Technique | Question |
 |---|---|---|
+| **Part A** | | **Fewer bits per weight** |
 | 1 | **Quantization** (INT8, FP8, INT4) | How few bits per weight can we get away with? |
+| **Part B** | | **Fewer layers** |
 | 2 | **Depth pruning** | Which layers can we delete? |
 | 3 | **Knowledge distillation** | Can the original model repair the pruned one? |
-| 4 | **Trade-off analysis** | Which variant should we ship? |
+| **Part C** | | **Decide** |
+| 4 | **Trade-off analysis** | Which version should we ship? |
 
 We measure **perplexity** on held-out Wikipedia text (general language ability, lower is better),
 an **MMLU** slice (knowledge), **tokens/second**, and **size**.
@@ -37,7 +42,7 @@ an **MMLU** slice (knowledge), **tokens/second**, and **size**.
 > Stuck? Set `USE_SOLUTIONS = True`."""),
 ]
 
-cells += [md("## 0. Setup"), code(f"""import os, sys
+cells += [md("## Setup"), code(f"""import os, sys
 REPO_URL = "https://github.com/{REPO_SLUG}"
 USE_DRIVE = False
 USE_SOLUTIONS = os.environ.get("LAB_USE_SOLUTIONS") == "1"
@@ -111,7 +116,9 @@ model = load_model()
 evaluate("fp16 (base)", model, bits_per_weight=16)
 ORIGINAL = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}   # CPU copy, to undo fake quantization""")]
 
-cells += [md("""## 1. Exercise 1 - Quantization
+cells += [md("""# Part A: Fewer bits per weight
+
+## Step 1 - Quantize the model (Exercise 1)
 
 Implement **symmetric absmax quantization** for a weight matrix `w` (shape `[rows, cols]`):
 
@@ -208,7 +215,9 @@ stacks such as TensorRT-LLM use fused low-precision kernels to turn the smaller 
 else:
     print("bitsandbytes needs an NVIDIA GPU - skipped on", rt.device)""")]
 
-cells += [md("""## 2. Exercise 2 - Depth pruning
+cells += [md("""# Part B: Fewer layers
+
+## Step 2 - Prune the layers that matter least (Exercise 2)
 
 Each decoder layer *adds* a correction to the residual stream. If a layer's output hidden state is
 almost the same as its input, the layer isn't doing much:
@@ -258,7 +267,7 @@ fell from 68% to about 24%, which is chance level for 4-option questions. The mo
 smaller (much of a 0.5B model is its embedding table, which pruning layers doesn't touch) and
 generates noticeably faster.""")]
 
-cells += [md("""## 3. Exercise 3 - Heal with knowledge distillation
+cells += [md("""## Step 3 - Heal the pruned model with distillation (Exercise 3)
 
 The unpruned model becomes the **teacher**; the pruned model is the **student**. At every token the
 student learns to match the teacher's *whole probability distribution*, softened with a
@@ -308,7 +317,9 @@ Minitron work distilled on billions of tokens, and we used about 100,000.
 **Experiment (optional):** set `N_DROP = 2` in Exercise 2 and re-run Exercises 2 and 3. A gentler
 prune keeps much more knowledge. Choosing how much to cut is the real engineering decision.""")]
 
-cells += [md("""## 4. Which variant should we ship?
+cells += [md("""# Part C: Decide what to ship
+
+## Step 4 - Which version should we ship?
 
 Plot accuracy against size. A variant that is both bigger *and* worse than another is **dominated**.
 The rest form the **Pareto frontier**: the only sensible choices, depending on your budget."""),

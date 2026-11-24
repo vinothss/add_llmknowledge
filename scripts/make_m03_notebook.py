@@ -24,6 +24,10 @@ in a support format** (skill), and has a **friendly tone** (behaviour). Three go
 | **SFT** - supervised fine-tuning | *skills / format* | prompt -> answer pairs | answer tokens only | LoRA |
 | **DPO** - direct preference optimisation | *behaviour / style* | prompt + chosen + rejected | preference margin | LoRA |
 
+**Follow along with the Module 3 page in the portal: the step numbers match.** Step 1 measures the
+base model; Part A (Step 2) teaches the facts with CPT; Part B (Step 3) teaches the answer format
+with SFT; Part C (Step 4) teaches Lumora's voice with DPO; Part D (Step 5) grades everything.
+
 You'll train five models and compare them on the Module 2 benchmark with the calibrated judge:
 
 ```
@@ -40,7 +44,7 @@ base ──CPT──> cpt ──SFT──> cpt+sft          base ──SFT──
 > Stuck? Set `USE_SOLUTIONS = True`."""),
 ]
 
-cells += [md("## 0. Setup"), code(f"""import os, sys
+cells += [md("## Setup"), code(f"""import os, sys
 REPO_URL = "https://github.com/{REPO_SLUG}"
 USE_DRIVE = False
 USE_SOLUTIONS = os.environ.get("LAB_USE_SOLUTIONS") == "1"
@@ -114,7 +118,7 @@ cpt_corpus.groupby("kind").size()"""),
 > standard trick: seeing a fact in several phrasings helps the model *extract* it later, not just
 > recite it. Skim a few paraphrases: some contain small inaccuracies. Augmented data needs QA too.""")]
 
-cells += [md("""## 1. Baseline
+cells += [md("""## Step 1 - Measure the baseline
 
 Every customised model is compared with the untouched student. For each model we record:
 * **answers** to the 30 held-out Lumora questions (graded by the judge at the end)
@@ -139,7 +143,9 @@ free()
 for q, a in list(zip(EVAL_Q, RESULTS["base"]["answers"]))[:3]:
     print(f"  Q: {q}\\n  A: {a}")""")]
 
-cells += [md("""## 2. Exercise 1 - Continued pretraining (knowledge)
+cells += [md("""# Part A: Teach the facts
+
+## Step 2 - Continued pretraining (Exercise 1)
 
 CPT is plain next-token prediction on domain text, the same objective as pretraining but on your
 corpus. Two decisions matter:
@@ -188,7 +194,9 @@ del trainer; free()
 evaluate("cpt", model, tok)
 checks.check_cpt_result(RESULTS["base"]["ppl"], RESULTS["cpt"]["ppl"], strict=STRICT)""")]
 
-cells += [md("""## 3. Exercise 2 - Supervised fine-tuning (skill) with LoRA
+cells += [md("""# Part B: Teach it to answer
+
+## Step 3 - Supervised fine-tuning with LoRA (Exercise 2)
 
 The CPT model *knows* more, but it was trained to continue documents, not to answer questions.
 SFT teaches the **question -> short answer** behaviour. Three details:
@@ -256,7 +264,9 @@ model = run_sft(model, tok, "sft")
 evaluate("sft", model, tok)
 del model; free()""")]
 
-cells += [md("""## 4. Exercise 3 - DPO (behaviour)
+cells += [md("""# Part C: Teach it Lumora's voice
+
+## Step 4 - Give it Lumora's voice with DPO (Exercise 3)
 
 We want a warmer, more casual support voice. Writing "ideal" replies by hand is slow. Judging
 *which of two replies is better* is fast, and that's the data DPO uses: `(prompt, chosen, rejected)`.
@@ -335,7 +345,9 @@ replies collapsed into content-free cheerfulness ("Hey there! Here's some fun id
 policy **over-optimised** the style signal and dropped helpfulness. That's why we watch both the
 style metric *and* sample outputs, and why `beta` and the learning rate matter.""")]
 
-cells += [md("""## 5. Exercise 4 - Grade everything with the calibrated judge
+cells += [md("""# Part D: Compare the results
+
+## Step 5 - Grade everything with Module 2's judge (Exercise 4)
 
 We re-calibrate the Module 2 judge (same method, same calibration data) and grade all five models'
 answers on the held-out Lumora benchmark."""),
@@ -375,7 +387,7 @@ on our 50-question slice, so there's no measurable forgetting at this scale. Ful
 larger corpus, or for longer, can cost general knowledge, so always check. Production recipes mix in
 general data to limit it.""")]
 
-cells += [md("## 6. Log to MLflow and save"),
+cells += [md("## Log to MLflow and save"),
     code("""mlflow.set_tracking_uri(f"sqlite:///{OUT}/mlflow.db")
 mlflow.set_experiment("lumora-customisation")
 for name in order:

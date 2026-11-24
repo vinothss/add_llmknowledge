@@ -18,14 +18,19 @@ cells += [md(f"""# Module 2 - Evaluating Large Language Models
 *"How good are the candidate base models in general?"* and *"How much do they know about **our**
 products?"* You need numbers you can trust, and a record of every experiment.
 
-| Part | Technique | Question it answers |
+**Follow along with the Module 2 page in the portal: the step numbers match.**
+
+| Step | Technique | Question it answers |
 |---|---|---|
-| 1 | Eyeballing | Does the model even understand the task? |
-| 2-3 | **MMLU**, zero-shot vs few-shot (log-likelihood scoring) | General knowledge and reasoning |
-| 4 | **Lumora QA benchmark**, closed-book vs open-book | Domain knowledge gap |
-| 5 | **LLM-as-a-judge**, threshold calibrated on human labels | Scalable grading of free-text answers |
-| 6 | **Pairwise comparison + Elo** | Ranking systems head-to-head |
-| 7 | **MLflow** | Tracking and comparing every run |
+| **Part A** | | **How capable are the models in general?** |
+| 1 | Look at the answers | Does the model even know the domain? |
+| 2-3 | **MMLU**, zero-shot vs few-shot, scored by log-likelihood | General knowledge and reasoning |
+| **Part B** | | **How much do they know about Lumora?** |
+| 4 | **Lumora test**, closed-book vs open-book | The size of the knowledge gap |
+| 5 | **LLM-as-a-judge**, calibrated on human labels | Grading free-text answers you can trust |
+| **Part C** | | **Compare and record** |
+| 6 | **Pairwise comparison + Elo** | Ranking systems head to head |
+| 7 | **MLflow** | Recording every run for Module 3 |
 
 | | Free track (T4) | Pro bonus (L4 / A100) |
 |---|---|---|
@@ -38,7 +43,7 @@ products?"* You need numbers you can trust, and a record of every experiment.
 > Stuck? Set `USE_SOLUTIONS = True`."""),
 ]
 
-cells += [md("## 0. Setup"), code(f"""import os, sys
+cells += [md("## Setup"), code(f"""import os, sys
 REPO_URL = "https://github.com/{REPO_SLUG}"
 USE_DRIVE = False
 USE_SOLUTIONS = os.environ.get("LAB_USE_SOLUTIONS") == "1"
@@ -82,7 +87,9 @@ if SMOKE:
 print(f"{len(lumora_eval)} held-out Lumora questions, {len(calibration)} human-labelled judge items")
 lumora_eval.head()""")]
 
-cells += [md("""## 1. Eyeballing
+cells += [md("""# Part A: How capable are the models in general?
+
+## Step 1 - Look at the answers
 
 Always start by *reading* outputs. Ask the small model some Lumora questions with no context
 (**closed-book**). What do you notice?"""),
@@ -96,7 +103,7 @@ for q, ref, a in zip(peek.question, peek.reference,
 data. This is **hallucination**, and it's why eyeballing alone isn't enough: you can't eyeball
 10,000 answers, and a fluent wrong answer is easy to miss. We need systematic metrics.""")]
 
-cells += [md("""## 2. Exercise 1 - Build MMLU prompts (zero-shot and few-shot)
+cells += [md("""## Step 2 - Use a standard benchmark: build MMLU prompts (Exercise 1)
 
 [MMLU](https://huggingface.co/datasets/cais/mmlu) has 57 subjects of 4-option multiple-choice
 questions. The classic prompt format is:
@@ -150,7 +157,7 @@ if USE_SOLUTIONS:
     code("""checks.check_mmlu_prompt(build_prompt, ex, mmlu["astronomy"]["dev"], "astronomy")
 print(build_prompt(ex, mmlu["astronomy"]["dev"][:2], "astronomy"))""")]
 
-cells += [md("""## 3. Exercise 2 - Log-likelihood scoring
+cells += [md("""## Step 3 - Score by log-likelihood (Exercise 2)
 
 Generating text and regex-parsing "the answer is B" is fragile. Benchmark harnesses instead ask:
 *which of the tokens `" A"`, `" B"`, `" C"`, `" D"` does the model think is most likely to come
@@ -185,7 +192,9 @@ for k in (0, 5):
     print(f"{STUDENT}  {k}-shot  acc={mmlu_results[(STUDENT, k)]['mmlu_acc']:.1%}")
 print("(random guessing = 25%)")""")]
 
-cells += [md("""## 4. The Lumora QA benchmark - closed-book vs open-book
+cells += [md("""# Part B: How much do they know about Lumora?
+
+## Step 4 - Test Lumora knowledge, closed-book and open-book
 
 MMLU says nothing about Lumora. Our held-out benchmark (`data/eval/lumora_eval.jsonl`, written
 by humans and **never used for training**) does. We test three systems:
@@ -235,7 +244,7 @@ pd.Series(f1, name="token_f1").round(3)"""),
     md("""F1 punishes correct paraphrases ("twelve years" vs "12 years") and rewards wrong answers that
 reuse the question's words. We need a grader that understands meaning: **LLM-as-a-judge**.""")]
 
-cells += [md("""## 5. Exercise 3 - LLM-as-a-judge, calibrated
+cells += [md("""## Step 5 - Build a judge you can trust (Exercise 3)
 
 A judge is itself a model, so **measure it before trusting it**. `judge_calibration.jsonl` holds
 155 answers (mostly *real* outputs of small models, hallucinations included) that a human
@@ -314,7 +323,9 @@ knowledge the model never saw. Open-book is high, so the information is useful o
 That gap is what Module 3 closes. Note the remaining bias: the large model is judging its *own*
 answers (self-preference). In production, use a different, stronger judge and re-calibrate it.""")]
 
-cells += [md("""## 6. Exercise 4 - Pairwise comparison and Elo
+cells += [md("""# Part C: Compare and record
+
+## Step 6 - Rank the systems head to head (Exercise 4)
 
 Absolute scores need a reference answer. When you don't have one (chat quality, style), compare
 two answers side by side and ask *which is better*. Chatbot Arena ranks models this way, turning
@@ -366,7 +377,7 @@ def run_elo(matches, systems, k=32, init=1000, permutations=50, seed=0):
 elo = run_elo(matches, SYSTEMS)
 pd.Series(elo, name="elo").round(0)""")]
 
-cells += [md("""## 7. Exercise 5 - Track everything with MLflow
+cells += [md("""## Step 7 - Record everything in MLflow (Exercise 5)
 
 You've produced a dozen numbers across models, prompts and metrics. Next week you'll fine-tune a
 model and need to compare against *exactly* these baselines. MLflow records each run's **params**
@@ -407,7 +418,7 @@ runs[["tags.mlflow.runName", "params.model", "metrics.mmlu_acc", "metrics.lumora
     md("""**Want the MLflow UI?** Copy `mlflow.db` from your Drive / workdir to your laptop and run
 `mlflow ui --backend-store-uri sqlite:///mlflow.db`, then open http://127.0.0.1:5000.""")]
 
-cells += [md("""## 8. Pro bonus - cross-check with `lm-evaluation-harness`
+cells += [md("""### Pro bonus - cross-check with `lm-evaluation-harness`
 
 *Runs on Colab Pro.* Our MMLU numbers come from code you wrote. Production teams use standard
 harnesses so results are comparable across papers. EleutherAI's `lm-evaluation-harness` (which
@@ -424,7 +435,7 @@ if RUN_HARNESS:
 else:
     print("Skipped - switch to an L4/A100 runtime (Colab Pro), or set RUN_HARNESS = True to try it on T4 (slow).")""")]
 
-cells += [md("## 9. Save baselines and wrap up"),
+cells += [md("## Save your baselines and wrap up"),
     code("""baselines = {
     "mmlu": {f"{m}|{k}shot": v["mmlu_acc"] for (m, k), v in mmlu_results.items()},
     "lumora_judge_acc": lumora_scores, "lumora_token_f1": f1, "elo": elo,

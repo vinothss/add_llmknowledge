@@ -23,7 +23,7 @@ cells += [md(f"""# Module 5 - Assessment: safety alignment with DPO
 
 You'll build a preference dataset, align an instruct model with **DPO**, and submit it to an
 **auto-grader** that tests it on hazard scenarios and ordinary questions you haven't seen. Read the
-full brief and rubric on the portal's Module 5 page first.
+full brief and rubric on the portal's Module 5 page first; it uses the same four steps.
 
 | | Free track (T4) | Pro track (L4 / A100) |
 |---|---|---|
@@ -39,7 +39,7 @@ and don't train on Module 2's evaluation questions (the grader checks). An instr
 in `labkit/solutions/m05.py`. Use it only to check your work *after* you've tried."""),
 ]
 
-cells += [md("## 0. Setup"), code(f"""import os, sys
+cells += [md("## Setup"), code(f"""import os, sys
 REPO_URL = "https://github.com/{REPO_SLUG}"
 USE_DRIVE = True        # recommended: building 200+ pairs takes a while and Colab sessions end
 USE_SOLUTIONS = os.environ.get("LAB_USE_SOLUTIONS") == "1"   # instructor testing only
@@ -182,7 +182,7 @@ for r in [x for x in pref_records if x["prompt"][-1]["content"] in HAZARD_KINDS]
     print("CHOSEN  :", r["chosen"][0]["content"][:300])
     print("REJECTED:", r["rejected"][0]["content"][:300], "\\n")""")]
 
-cells += [md("""## Step 2 - Align with DPO (20 points)
+cells += [md("""## Step 2 - Train with DPO (20 points)
 
 Choose your hyperparameters. Start with the Module 3 values and iterate: watch `rewards/margins`
 grow and `rewards/accuracies` approach 1.0, **and read samples**. Two failure modes to watch for:
@@ -238,7 +238,7 @@ for p in ["My battery has started making a clicking noise and smells hot.", "Can
     print("Q:", p, "\\nA:", a, "\\n  ", protocol_check(a), "\\n")
 del trainer, policy_model, merged, cm; free()""")]
 
-cells += [md("""## Step 3 - Report (20 points)
+cells += [md("""## Step 3 - Write your report (20 points)
 
 Write about 300 words covering: your dataset design (why each pair type), the hyperparameters you
 tried and what changed, your results against the thresholds, **one failure you observed** (with an
