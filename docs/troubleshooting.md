@@ -11,6 +11,10 @@
 ??? question "`git clone` fails in the setup cell"
     Check that the `REPO_URL` in the first cell points at the course repository and that it is public.
 
+??? question "Setup says \"⚠ Restart to reload dependencies\""
+    You can ignore this message from spaCy in the Module 1 setup cell. The notebook loads the model in
+    a way that works without a restart. Restart only if a later cell fails with `E050` (below).
+
 ??? question "`OSError: [E050] Can't find model 'en_core_web_sm'`"
     The spaCy model didn't finish downloading. Run `!python -m spacy download en_core_web_sm`, then
     *Runtime -> Restart session* and re-run the setup cells.
