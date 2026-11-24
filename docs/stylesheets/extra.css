@@ -1,0 +1,58 @@
+:root {
+  --ok: #2e7d32;
+  --bad: #c62828;
+  --soft: rgba(103, 58, 183, 0.08);
+}
+[data-md-color-scheme="slate"] {
+  --ok: #81c784;
+  --bad: #ef9a9a;
+  --soft: rgba(179, 157, 219, 0.12);
+}
+
+/* Quiz */
+.quiz-box { margin: 1.5rem 0; }
+.quiz-q {
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  margin: 0 0 1rem;
+}
+.quiz-q legend { font-weight: 600; padding: 0 0.3rem; }
+.quiz-opt { display: block; padding: 0.25rem 0; cursor: pointer; }
+.quiz-q.is-correct { border-color: var(--ok); }
+.quiz-q.is-wrong { border-color: var(--bad); }
+.quiz-feedback { font-size: 0.85em; margin-top: 0.4rem; }
+.quiz-q.is-correct .quiz-feedback { color: var(--ok); }
+.quiz-q.is-wrong .quiz-feedback { color: var(--bad); }
+.quiz-result { margin-top: 0.8rem; font-weight: 600; }
+
+/* Progress tracker */
+#progress-tracker { margin: 1rem 0 2rem; }
+.tracker-bar { height: 8px; border-radius: 4px; background: var(--md-default-fg-color--lightest); overflow: hidden; }
+.tracker-fill { height: 100%; background: var(--md-primary-fg-color); transition: width 0.3s; }
+.tracker-summary { font-size: 0.85em; margin: 0.4rem 0 0.8rem; color: var(--md-default-fg-color--light); }
+.tracker-row {
+  display: flex; align-items: center; gap: 0.6rem;
+  padding: 0.55rem 0.8rem; margin-bottom: 0.4rem;
+  border-radius: 6px; background: var(--soft);
+  color: var(--md-default-fg-color) !important;
+}
+.tracker-name { flex: 1; }
+.tracker-pill {
+  font-size: 0.75em; padding: 0.1rem 0.55rem; border-radius: 999px;
+  border: 1px solid var(--md-default-fg-color--lighter); white-space: nowrap;
+}
+.tracker-pill.on { background: var(--md-primary-fg-color); color: var(--md-primary-bg-color); border-color: transparent; }
+
+/* Lab launch card */
+.lab-card {
+  border-left: 4px solid var(--md-accent-fg-color);
+  background: var(--soft);
+  padding: 0.8rem 1.2rem; border-radius: 6px; margin: 1.2rem 0;
+}
+.lab-card img { vertical-align: middle; }
+
+@media (max-width: 600px) {
+  .tracker-row { flex-wrap: wrap; }
+  .tracker-name { flex-basis: 100%; }
+}

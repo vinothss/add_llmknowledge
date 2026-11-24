@@ -1,0 +1,3 @@
+# Module 4 extras. Colab already ships torch, transformers, datasets, pandas and matplotlib.
+mlflow>=2.14
+bitsandbytes>=0.45 ; platform_system == "Linux"

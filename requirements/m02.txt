@@ -1,0 +1,2 @@
+# Module 2 extras. Colab already ships torch, transformers, datasets, pandas and matplotlib.
+mlflow>=2.14

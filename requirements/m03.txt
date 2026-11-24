@@ -1,0 +1,5 @@
+# Module 3 extras. Tested with trl 1.18.2, peft 0.22.0, transformers 5.23.0, torch 2.15.
+trl>=1.18,<2
+peft>=0.22
+mlflow>=2.14
+bitsandbytes>=0.45 ; platform_system == "Linux"

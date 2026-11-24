@@ -1,0 +1,30 @@
+{"id": "q01", "category": "product", "question": "What is the usable capacity of the Lumora Vault 10?", "reference": "10.2 kWh.", "source_title": "Lumora Vault 10 overview"}
+{"id": "q02", "category": "product", "question": "What battery chemistry does the Lumora Vault use?", "reference": "Lithium iron phosphate (LFP).", "source_title": "Lumora Vault 10 overview"}
+{"id": "q03", "category": "product", "question": "How many Vault 10 units can be connected to one Bridge inverter?", "reference": "Up to four units, for a maximum of 40.8 kWh.", "source_title": "Lumora Vault 10 overview"}
+{"id": "q04", "category": "product", "question": "How much does the Vault 15 weigh?", "reference": "141 kg.", "source_title": "Lumora Vault 15 overview"}
+{"id": "q05", "category": "product", "question": "What is the maximum number of Vault 15 units on a single Bridge inverter?", "reference": "Three.", "source_title": "Lumora Vault 15 overview"}
+{"id": "q06", "category": "product", "question": "How quickly does the Lumora Bridge switch to backup mode during a grid outage?", "reference": "In under 20 milliseconds.", "source_title": "Lumora Bridge hybrid inverter"}
+{"id": "q07", "category": "product", "question": "How many MPPT solar inputs does the Lumora Bridge have?", "reference": "Two independent MPPT inputs of up to 600 V each.", "source_title": "Lumora Bridge hybrid inverter"}
+{"id": "q08", "category": "product", "question": "What does the Storm Watch feature do?", "reference": "It automatically switches the system to Backup-Only mode when a severe weather alert is issued for the home's postcode.", "source_title": "Lumora Home app"}
+{"id": "q09", "category": "product", "question": "What are the three operating modes in the Lumora Home app?", "reference": "Self-Powered, Time-Based Control and Backup-Only.", "source_title": "Lumora Home app"}
+{"id": "q10", "category": "warranty", "question": "How long is the Lumora Vault warranty?", "reference": "12 years.", "source_title": "Vault warranty terms"}
+{"id": "q11", "category": "warranty", "question": "What capacity does Lumora guarantee at the end of the warranty?", "reference": "At least 70 percent of the original usable capacity (or after 6,000 full cycles).", "source_title": "Vault warranty terms"}
+{"id": "q12", "category": "warranty", "question": "What is the warranty period for the Bridge inverter?", "reference": "10 years.", "source_title": "Vault warranty terms"}
+{"id": "q13", "category": "warranty", "question": "How quickly is a warranty claim reviewed?", "reference": "A support engineer reviews the diagnostic log within two business days.", "source_title": "How to make a warranty claim"}
+{"id": "q14", "category": "warranty", "question": "Are customers charged for labour on approved warranty replacements?", "reference": "Not during the first five years.", "source_title": "How to make a warranty claim"}
+{"id": "q15", "category": "support", "question": "What does error code E-101 mean?", "reference": "The battery management system detected a cell temperature outside the safe range.", "source_title": "Error code E-101"}
+{"id": "q16", "category": "support", "question": "What ventilation gap is required around a Vault?", "reference": "At least 15 cm.", "source_title": "Error code E-101"}
+{"id": "q17", "category": "support", "question": "What is the first troubleshooting step for error E-204?", "reference": "Power-cycle the Bridge by switching off the AC isolator for 60 seconds.", "source_title": "Error code E-204"}
+{"id": "q18", "category": "support", "question": "What does error code E-317 indicate?", "reference": "The Bridge has lost its internet connection for more than 72 hours.", "source_title": "Error code E-317"}
+{"id": "q19", "category": "support", "question": "How do you factory-reset the Bridge?", "reference": "Hold the service button for 15 seconds until the status light flashes amber three times.", "source_title": "Resetting the Bridge to factory settings"}
+{"id": "q20", "category": "support", "question": "What is the name of the Wi-Fi network the Bridge broadcasts after a reset?", "reference": "LUMORA-SETUP followed by the last four digits of its serial number.", "source_title": "Resetting the Bridge to factory settings"}
+{"id": "q21", "category": "policy", "question": "Within how many days can unused accessories be returned?", "reference": "30 days.", "source_title": "Customer return policy"}
+{"id": "q22", "category": "policy", "question": "What restocking fee applies to returning an uninstalled Vault?", "reference": "10 percent.", "source_title": "Customer return policy"}
+{"id": "q23", "category": "policy", "question": "How long is Lumora installer certification valid?", "reference": "24 months.", "source_title": "Installer certification programme"}
+{"id": "q24", "category": "policy", "question": "How many days per week may eligible Lumora employees work remotely?", "reference": "Up to three days per week.", "source_title": "Employee remote work policy"}
+{"id": "q25", "category": "policy", "question": "What is the daily meal allowance for Lumora business travel?", "reference": "60 euros.", "source_title": "Employee travel and expenses"}
+{"id": "q26", "category": "company", "question": "Where and when was Lumora Energy founded?", "reference": "In Rotterdam in 2017.", "source_title": "About Lumora Energy"}
+{"id": "q27", "category": "company", "question": "Where is Lumora's main factory?", "reference": "Eindhoven.", "source_title": "About Lumora Energy"}
+{"id": "q28", "category": "engineering", "question": "At what temperature do the Vault's internal fans activate?", "reference": "When cell temperature exceeds 38 C.", "source_title": "Vault thermal design note"}
+{"id": "q29", "category": "engineering", "question": "Why does the Vault heat its cells before charging below 0 C?", "reference": "Charging LFP cells below freezing can cause lithium plating.", "source_title": "Vault thermal design note"}
+{"id": "q30", "category": "faq", "question": "What backup reserve does the Vault keep by default?", "reference": "20 percent.", "source_title": "Does the Vault work during a power cut?"}

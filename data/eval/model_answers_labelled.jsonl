@@ -1,0 +1,120 @@
+{"id": "q01", "system": "Qwen2.5-0.5B/closed", "candidate": "The usable capacity of the Lumora Vault 10 is estimated to be around 5 terabytes (TB).", "human_label": false}
+{"id": "q01", "system": "Qwen2.5-0.5B/open", "candidate": "The Lumora Vault 10 has 10.2 kWh of usable capacity.", "human_label": true}
+{"id": "q02", "system": "Qwen2.5-0.5B/closed", "candidate": "The Lumora Vault uses lithium-ion batteries for its energy storage system.", "human_label": false}
+{"id": "q02", "system": "Qwen2.5-0.5B/open", "candidate": "The Lumora Vault uses lithium iron phosphate (LFP) batteries.", "human_label": true}
+{"id": "q03", "system": "Qwen2.5-0.5B/closed", "candidate": "Lumora Energy's Vault 10 units can connect to one Bridge inverter at most.", "human_label": false}
+{"id": "q03", "system": "Qwen2.5-0.5B/open", "candidate": "One Lumora Vault 10 unit can be connected to one Lumora Bridge inverter.", "human_label": false}
+{"id": "q04", "system": "Qwen2.5-0.5B/closed", "candidate": "The Vault 15 weighs approximately 20 tons.", "human_label": false}
+{"id": "q04", "system": "Qwen2.5-0.5B/open", "candidate": "The Vault 15 weighs 141 kg.", "human_label": true}
+{"id": "q05", "system": "Qwen2.5-0.5B/closed", "candidate": "The maximum number of Vault 15 units on a single Bridge inverter is typically limited to two due to safety and operational considerations.", "human_label": false}
+{"id": "q05", "system": "Qwen2.5-0.5B/open", "candidate": "A maximum of three Vault 15 units can be connected to a single Bridge inverter.", "human_label": true}
+{"id": "q06", "system": "Qwen2.5-0.5B/closed", "candidate": "The Lumora Bridge switches to backup mode within 10-20 seconds after a grid outage occurs.", "human_label": false}
+{"id": "q06", "system": "Qwen2.5-0.5B/open", "candidate": "During a grid outage, the Lumora Bridge switches to backup mode in under 20 milliseconds.", "human_label": true}
+{"id": "q07", "system": "Qwen2.5-0.5B/closed", "candidate": "The Lumora Bridge has 4 MPPT (Max Power Point Tracking) solar input modules for optimal energy collection and management.", "human_label": false}
+{"id": "q07", "system": "Qwen2.5-0.5B/open", "candidate": "The Lumora Bridge has two independent MPPT solar inputs of up to 600 V each.", "human_label": true}
+{"id": "q08", "system": "Qwen2.5-0.5B/closed", "candidate": "The Storm Watch feature alerts users to potential severe weather conditions that could affect their energy supply and safety.", "human_label": false}
+{"id": "q08", "system": "Qwen2.5-0.5B/open", "candidate": "The Storm Watch feature automatically switches to Backup-Only mode when a severe weather alert is issued for the home's postcode.", "human_label": true}
+{"id": "q09", "system": "Qwen2.5-0.5B/closed", "candidate": "The Lumora Home app offers three main operating modes: standard mode, premium mode, and advanced mode.", "human_label": false}
+{"id": "q09", "system": "Qwen2.5-0.5B/open", "candidate": "The Lumora Home app offers three operating modes: Self-Powered, Time-Based Control, and Backup-Only.", "human_label": true}
+{"id": "q10", "system": "Qwen2.5-0.5B/closed", "candidate": "The Lumora Vault warranty for energy products typically lasts 2 years from the date of purchase.", "human_label": false}
+{"id": "q10", "system": "Qwen2.5-0.5B/open", "candidate": "The Lumora Vault warranty lasts 12 years.", "human_label": true}
+{"id": "q11", "system": "Qwen2.5-0.5B/closed", "candidate": "Lumora Energy guarantees a 10-year warranty with a maximum guaranteed capacity of 250 megawatts (MW).", "human_label": false}
+{"id": "q11", "system": "Qwen2.5-0.5B/open", "candidate": "Lumora guarantees that the battery will retain at least 70% of its original usable capacity at the end of the warranty period or after 6,000 full cycles, whichever comes first.", "human_label": true}
+{"id": "q12", "system": "Qwen2.5-0.5B/closed", "candidate": "The warranty period for the Bridge inverter from Lumora Energy typically ranges from 2 to 5 years, depending on the specific model and manufacturer.", "human_label": false}
+{"id": "q12", "system": "Qwen2.5-0.5B/open", "candidate": "The warranty period for the Bridge inverter is 10 years.", "human_label": true}
+{"id": "q13", "system": "Qwen2.5-0.5B/closed", "candidate": "A warranty claim review typically takes 24-48 hours to complete, depending on the complexity of the issue and the availability of resources.", "human_label": false}
+{"id": "q13", "system": "Qwen2.5-0.5B/open", "candidate": "A warranty claim is reviewed within two business days after it's opened up with the Lumora Home app.", "human_label": true}
+{"id": "q14", "system": "Qwen2.5-0.5B/closed", "candidate": "Customers are typically not charged for labor on approved warranty replacements as the warranty process is designed to cover repairs and maintenance issues within the agreed-upon timeframe without additional charges beyond what's covered under the warranty policy.", "human_label": false}
+{"id": "q14", "system": "Qwen2.5-0.5B/open", "candidate": "Yes, customers are never charged for labor on approved warranty replacements during the first five years.", "human_label": true}
+{"id": "q15", "system": "Qwen2.5-0.5B/closed", "candidate": "Error code E-101 typically indicates an issue with the system's power supply or electrical components, which could be causing the device to fail to start or operate properly.", "human_label": false}
+{"id": "q15", "system": "Qwen2.5-0.5B/open", "candidate": "Error code E-101 indicates a cell temperature outside the safe range for the battery management system.", "human_label": true}
+{"id": "q16", "system": "Qwen2.5-0.5B/closed", "candidate": "A vault typically requires an open-air ventilation gap to allow for natural air circulation and prevent moisture buildup.", "human_label": false}
+{"id": "q16", "system": "Qwen2.5-0.5B/open", "candidate": "A minimum of 15 cm should be left around the Vault for proper ventilation.", "human_label": true}
+{"id": "q17", "system": "Qwen2.5-0.5B/closed", "candidate": "The first troubleshooting step for error E-204 on Lumora Energy typically involves checking if there are any network connectivity issues or if the system has been updated to the latest version of the software.", "human_label": false}
+{"id": "q17", "system": "Qwen2.5-0.5B/open", "candidate": "The first troubleshooting step for error E-204 is to power-cycle the Bridge by switching off the AC isolator for 60 seconds.", "human_label": true}
+{"id": "q18", "system": "Qwen2.5-0.5B/closed", "candidate": "Error code E-317 typically indicates that the system is unable to access or retrieve data from a specific location due to network issues or configuration errors.", "human_label": false}
+{"id": "q18", "system": "Qwen2.5-0.5B/open", "candidate": "Error code E-317 indicates that the Bridge has lost its internet connection for more than 72 hours, which affects energy production and backup functions, as well as firmware updates and remote monitoring operations.", "human_label": true}
+{"id": "q19", "system": "Qwen2.5-0.5B/closed", "candidate": "To factory-reset the Bridge, you would typically follow these steps: 1. **Unplug the Power Supply**: Ensure that all power sources to the Bridge are disconnected. 2. **Remove the Battery**: Locate and remove the battery from the Bridge's main unit or any other external components. 3. **", "human_label": false}
+{"id": "q19", "system": "Qwen2.5-0.5B/open", "candidate": "To factory-reset the Bridge, hold the Bridge service button for 15 seconds until the status light flashes amber three times.", "human_label": true}
+{"id": "q20", "system": "Qwen2.5-0.5B/closed", "candidate": "The name of the Wi-Fi network that Bridge broadcasts after a reset is \"Bridge\".", "human_label": false}
+{"id": "q20", "system": "Qwen2.5-0.5B/open", "candidate": "The Bridge broadcasts a setup Wi-Fi network named LUMORA-SETUP followed by the last four digits of its serial number after a reset.", "human_label": true}
+{"id": "q21", "system": "Qwen2.5-0.5B/closed", "candidate": "Unused Lumora Energy accessories can typically be returned within 30 days of purchase.", "human_label": true}
+{"id": "q21", "system": "Qwen2.5-0.5B/open", "candidate": "Unused accessories like the Bridge LTE modem or wall brackets can be returned within 30 days of delivery for a full refund.", "human_label": true}
+{"id": "q22", "system": "Qwen2.5-0.5B/closed", "candidate": "The return of an uninstalled Vault at Lumora Energy typically requires a 50% restocking fee for the original purchase price.", "human_label": false}
+{"id": "q22", "system": "Qwen2.5-0.5B/open", "candidate": "The uninstalled Vault units may be returned within 14 days with a 10% restocking fee.", "human_label": true}
+{"id": "q23", "system": "Qwen2.5-0.5B/closed", "candidate": "Lumora's installer certification typically lasts for 12 months from the date of issuance.", "human_label": false}
+{"id": "q23", "system": "Qwen2.5-0.5B/open", "candidate": "Lumora's certified installer program allows for a two-day training course followed by a practical assessment that lasts for 24 months.", "human_label": false}
+{"id": "q24", "system": "Qwen2.5-0.5B/closed", "candidate": "Eligible Lumora employees can typically work remotely up to 5 days per week, depending on the company's policies and specific job requirements.", "human_label": false}
+{"id": "q24", "system": "Qwen2.5-0.5B/open", "candidate": "Eligible Lumora employees can work remotely up to three days per week.", "human_label": true}
+{"id": "q25", "system": "Qwen2.5-0.5B/closed", "candidate": "The daily meal allowance for Lumora Business Travel is typically $10 per person.", "human_label": false}
+{"id": "q25", "system": "Qwen2.5-0.5B/open", "candidate": "The daily meal allowance for Lumora's business travel is 60 euros.", "human_label": true}
+{"id": "q26", "system": "Qwen2.5-0.5B/closed", "candidate": "Lumora Energy was founded in 2015 by former CEO of the Chinese oil company Sinopec, Mr. Liang Xiaohong.", "human_label": false}
+{"id": "q26", "system": "Qwen2.5-0.5B/open", "candidate": "Lumora Energy was founded in 2017 in Rotterdam.", "human_label": true}
+{"id": "q27", "system": "Qwen2.5-0.5B/closed", "candidate": "Lumora Energy's main factory is located in the United States, specifically in the state of Texas.", "human_label": false}
+{"id": "q27", "system": "Qwen2.5-0.5B/open", "candidate": "Lumora's main factory is located in Eindhoven.", "human_label": true}
+{"id": "q28", "system": "Qwen2.5-0.5B/closed", "candidate": "The Vault's internal fans activate at 100 degrees Fahrenheit (38 degrees Celsius).", "human_label": true}
+{"id": "q28", "system": "Qwen2.5-0.5B/open", "candidate": "At temperatures above 38\u00b0C, the Vault's internal fans activate.", "human_label": true}
+{"id": "q29", "system": "Qwen2.5-0.5B/closed", "candidate": "The Vault heats its cells to prevent them from freezing and ensuring they remain functional during the charging process at extremely low temperatures below zero Celsius.", "human_label": false}
+{"id": "q29", "system": "Qwen2.5-0.5B/open", "candidate": "The Vault heats its cells before charging below 0\u00b0C to prevent lithium plating and ensures safe operation at lower temperatures.", "human_label": true}
+{"id": "q30", "system": "Qwen2.5-0.5B/closed", "candidate": "The Vault keeps a backup reserve of 10% of its total reserves as an emergency measure to ensure that it can continue operating even if some components fail or require maintenance.", "human_label": false}
+{"id": "q30", "system": "Qwen2.5-0.5B/open", "candidate": "The Vault keeps a 20% reserve of backup power during a grid outage by default.", "human_label": true}
+{"id": "q01", "system": "Qwen2.5-1.5B/closed", "candidate": "The usable capacity of the Lumora Vault 10 is 25 TB.", "human_label": false}
+{"id": "q01", "system": "Qwen2.5-1.5B/open", "candidate": "The usable capacity of the Lumora Vault 10 is 10.2 kWh.", "human_label": true}
+{"id": "q02", "system": "Qwen2.5-1.5B/closed", "candidate": "The Lumora Vault uses lithium-ion batteries.", "human_label": false}
+{"id": "q02", "system": "Qwen2.5-1.5B/open", "candidate": "The Lumora Vault uses lithium iron phosphate (LFP) cells.", "human_label": true}
+{"id": "q03", "system": "Qwen2.5-1.5B/closed", "candidate": "One Bridge inverter can connect up to 4 Vault 10 units.", "human_label": true}
+{"id": "q03", "system": "Qwen2.5-1.5B/open", "candidate": "Up to four Vault 10 units can be stacked on one Lumora Bridge inverter for a maximum of 40.8 kWh.", "human_label": true}
+{"id": "q04", "system": "Qwen2.5-1.5B/closed", "candidate": "I'm sorry, but I couldn't find any information on the weight of the Vault 15 from Lumora Energy. Could you please provide more context or clarify your question?", "human_label": false}
+{"id": "q04", "system": "Qwen2.5-1.5B/open", "candidate": "The Vault 15 weighs 141 kg.", "human_label": true}
+{"id": "q05", "system": "Qwen2.5-1.5B/closed", "candidate": "The maximum number of Vault 15 units that can be connected to a single Bridge inverter is 4.", "human_label": false}
+{"id": "q05", "system": "Qwen2.5-1.5B/open", "candidate": "A maximum of three Vault 15 units can be connected to a single Bridge inverter.", "human_label": true}
+{"id": "q06", "system": "Qwen2.5-1.5B/closed", "candidate": "The Lumora Bridge automatically switches to backup mode within seconds of detecting a grid outage.", "human_label": false}
+{"id": "q06", "system": "Qwen2.5-1.5B/open", "candidate": "The Lumora Bridge switches to backup mode within 20 milliseconds during a grid outage.", "human_label": true}
+{"id": "q07", "system": "Qwen2.5-1.5B/closed", "candidate": "The Lumora Bridge has 4 MPPT solar inputs.", "human_label": false}
+{"id": "q07", "system": "Qwen2.5-1.5B/open", "candidate": "The Lumora Bridge has two independent MPPT solar inputs.", "human_label": true}
+{"id": "q08", "system": "Qwen2.5-1.5B/closed", "candidate": "The Storm Watch feature alerts users when severe weather conditions are expected to impact their area.", "human_label": false}
+{"id": "q08", "system": "Qwen2.5-1.5B/open", "candidate": "The Storm Watch feature automatically switches to Backup-Only mode when a severe weather alert is issued for the home's postcode.", "human_label": true}
+{"id": "q09", "system": "Qwen2.5-1.5B/closed", "candidate": "The Lumora Home app has three operating modes: Smart Mode, Manual Mode, and Sleep Mode.", "human_label": false}
+{"id": "q09", "system": "Qwen2.5-1.5B/open", "candidate": "The three operating modes in the Lumora Home app are Self-Powered, Time-Based Control, and Backup-Only.", "human_label": true}
+{"id": "q10", "system": "Qwen2.5-1.5B/closed", "candidate": "The Lumora Vault warranty typically lasts for 5 years or 10,000 hours of usage.", "human_label": false}
+{"id": "q10", "system": "Qwen2.5-1.5B/open", "candidate": "The Lumora Vault warranty lasts for 12 years.", "human_label": true}
+{"id": "q11", "system": "Qwen2.5-1.5B/closed", "candidate": "Lumora guarantees a specific power output capacity for its energy systems at the end of the warranty period.", "human_label": false}
+{"id": "q11", "system": "Qwen2.5-1.5B/open", "candidate": "Lumora guarantees that the battery will retain at least 70 percent of its original usable capacity at the end of the warranty period.", "human_label": true}
+{"id": "q12", "system": "Qwen2.5-1.5B/closed", "candidate": "The warranty period for the Lumora Energy Bridge inverter is 2 years.", "human_label": false}
+{"id": "q12", "system": "Qwen2.5-1.5B/open", "candidate": "The warranty period for the Bridge inverter is 10 years.", "human_label": true}
+{"id": "q13", "system": "Qwen2.5-1.5B/closed", "candidate": "The review of a warranty claim at Lumora Energy typically takes 24-72 hours.", "human_label": false}
+{"id": "q13", "system": "Qwen2.5-1.5B/open", "candidate": "A warranty claim is reviewed within two business days.", "human_label": true}
+{"id": "q14", "system": "Qwen2.5-1.5B/closed", "candidate": "No, customers are not charged for labor on approved warranty replacements.", "human_label": false}
+{"id": "q14", "system": "Qwen2.5-1.5B/open", "candidate": "Customers are never charged for labour on approved warranty replacements during the first five years.", "human_label": true}
+{"id": "q15", "system": "Qwen2.5-1.5B/closed", "candidate": "Error code E-101 typically indicates an issue with the system's configuration or settings.", "human_label": false}
+{"id": "q15", "system": "Qwen2.5-1.5B/open", "candidate": "Error code E-101 indicates that the battery management system detected an abnormal cell temperature, which may require clearing the ventilation gap or contacting support if it persists for multiple instances within a day.", "human_label": true}
+{"id": "q16", "system": "Qwen2.5-1.5B/closed", "candidate": "A ventilation gap of 1 inch (25 mm) or more is typically required around a Vault to ensure proper air circulation and prevent overheating.", "human_label": false}
+{"id": "q16", "system": "Qwen2.5-1.5B/open", "candidate": "A ventilation gap of at least 15 cm around the unit is required for the Vault.", "human_label": true}
+{"id": "q17", "system": "Qwen2.5-1.5B/closed", "candidate": "The first troubleshooting step for error E-204 is to check if there's an insufficient balance on the account.", "human_label": false}
+{"id": "q17", "system": "Qwen2.5-1.5B/open", "candidate": "The first troubleshooting step for error E-204 is to power-cycle the Bridge by switching off the AC isolator for 60 seconds.", "human_label": true}
+{"id": "q18", "system": "Qwen2.5-1.5B/closed", "candidate": "Error code E-317 typically indicates an issue with the fuel injection system in a vehicle.", "human_label": false}
+{"id": "q18", "system": "Qwen2.5-1.5B/open", "candidate": "Error code E-317 indicates that the Bridge has lost its internet connection for more than 72 hours, causing energy production and backup to continue while firmware updates and remote monitoring to be paused.", "human_label": true}
+{"id": "q19", "system": "Qwen2.5-1.5B/closed", "candidate": "To factory reset the Lumora Energy Bridge, follow these steps: 1. Connect the Bridge to your computer via USB. 2. Open the Lumora Energy app on your device. 3. Tap \"Settings\" and then select \"Reset.\" 4. Choose \"Factory Reset\" from the options available.", "human_label": false}
+{"id": "q19", "system": "Qwen2.5-1.5B/open", "candidate": "To factory-reset the Bridge, hold the Bridge service button for 15 seconds until the status light flashes amber three times, after which it will broadcast a setup Wi-Fi network named LUMORA-SETUP followed by the last four digits of its serial number.", "human_label": true}
+{"id": "q20", "system": "Qwen2.5-1.5B/closed", "candidate": "The name of the Wi-Fi network that the Bridge broadcasts after a reset is \"Lumora Energy.\"", "human_label": false}
+{"id": "q20", "system": "Qwen2.5-1.5B/open", "candidate": "The name of the Wi-Fi network the Bridge broadcasts after a reset is LUMORA-SETUP.", "human_label": true}
+{"id": "q21", "system": "Qwen2.5-1.5B/closed", "candidate": "Unused accessories cannot be returned after 30 days.", "human_label": true}
+{"id": "q21", "system": "Qwen2.5-1.5B/open", "candidate": "Unused accessories like the Bridge LTE modem or wall brackets can be returned within 30 days of delivery.", "human_label": true}
+{"id": "q22", "system": "Qwen2.5-1.5B/closed", "candidate": "The restocking fee for returning an uninstalled Vault is not applicable.", "human_label": false}
+{"id": "q22", "system": "Qwen2.5-1.5B/open", "candidate": "A 10% restocking fee applies to returning an uninstalled Vault unit.", "human_label": true}
+{"id": "q23", "system": "Qwen2.5-1.5B/closed", "candidate": "Lumora installer certification is valid for 3 years.", "human_label": false}
+{"id": "q23", "system": "Qwen2.5-1.5B/open", "candidate": "Lumora installer certification is valid for 24 months.", "human_label": true}
+{"id": "q24", "system": "Qwen2.5-1.5B/closed", "candidate": "Lumora Energy allows up to 20% of eligible employees to work remotely up to five days per week.", "human_label": false}
+{"id": "q24", "system": "Qwen2.5-1.5B/open", "candidate": "Eligible Lumora employees may work remotely up to three days per week.", "human_label": true}
+{"id": "q25", "system": "Qwen2.5-1.5B/closed", "candidate": "The daily meal allowance for Lumora business travel varies and is typically provided on an as-needed basis.", "human_label": false}
+{"id": "q25", "system": "Qwen2.5-1.5B/open", "candidate": "The daily meal allowance for Lumora business travel is 60 euros.", "human_label": true}
+{"id": "q26", "system": "Qwen2.5-1.5B/closed", "candidate": "Lumora Energy was founded in 2015 in Dubai, United Arab Emirates.", "human_label": false}
+{"id": "q26", "system": "Qwen2.5-1.5B/open", "candidate": "Lumora Energy was founded in 2017 in Rotterdam.", "human_label": true}
+{"id": "q27", "system": "Qwen2.5-1.5B/closed", "candidate": "Lumora's main factory is located in China.", "human_label": false}
+{"id": "q27", "system": "Qwen2.5-1.5B/open", "candidate": "Lumora's main factory is located in Eindhoven.", "human_label": true}
+{"id": "q28", "system": "Qwen2.5-1.5B/closed", "candidate": "The Vault's internal fans activate at 105 degrees Fahrenheit or higher.", "human_label": false}
+{"id": "q28", "system": "Qwen2.5-1.5B/open", "candidate": "Internal fans activate above 38\u00b0C.", "human_label": true}
+{"id": "q29", "system": "Qwen2.5-1.5B/closed", "candidate": "Lumora Energy heats its cells to prevent damage from freezing at low temperatures below -18\u00b0C during charging.", "human_label": false}
+{"id": "q29", "system": "Qwen2.5-1.5B/open", "candidate": "The Vault heats its cells below 0\u00b0C to prevent lithium plating during charging, which could damage the battery.", "human_label": true}
+{"id": "q30", "system": "Qwen2.5-1.5B/closed", "candidate": "The Vault keeps its own backup reserve by default.", "human_label": false}
+{"id": "q30", "system": "Qwen2.5-1.5B/open", "candidate": "The Vault keeps a 20% reserve of backup power by default.", "human_label": true}
